@@ -133,17 +133,18 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		// TODO Auto-generated method stub
 
 	}
+	
+	private EditorPoint normalizePoint(int x, int y) {
+		EditorPoint p = new EditorPoint();
+		p.x = Utils.normalize(0, x, editorWidth, xn, xp);
+		p.y = Utils.normalize(0, editorHeight - y, editorHeight, yn, yp);
+		return p;
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		double x = Utils.normalize(0, e.getX(), editorWidth, xn, xp);
-		double y = Utils.normalize(0, editorHeight - e.getY(), editorHeight, yn, yp);
 		
-		clicked = new EditorPoint();
-		
-		clicked.x = x;
-
-		clicked.y = y;
+		clicked = normalizePoint(e.getX(), e.getY());
 		
 		glDrawable.display();
 		
