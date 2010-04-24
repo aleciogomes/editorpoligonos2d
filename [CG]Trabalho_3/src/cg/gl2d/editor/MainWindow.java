@@ -22,7 +22,7 @@ public class MainWindow extends JFrame{
 	}		
 	
 	public void requestEditorFocus() {
-		editor.getCanvas().requestFocus();
+		editor.focus();
 	}
 	
 	public static void main(String[] args) {
