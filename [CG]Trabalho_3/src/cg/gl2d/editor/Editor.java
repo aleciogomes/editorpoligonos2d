@@ -91,7 +91,7 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		 gl.glLoadIdentity();
 
 		 // configurar window
-		 glu.gluOrtho2D(0, editorHeight * 0.1, 0, editorWidth * 0.1);
+		 glu.gluOrtho2D(0, editorWidth * 0.1, 0, editorHeight * 0.1);
 		 
 		 for (Shape s : shapes) {
 			 s.draw(gl);
