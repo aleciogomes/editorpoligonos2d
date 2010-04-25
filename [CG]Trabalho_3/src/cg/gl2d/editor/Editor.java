@@ -38,8 +38,6 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 	private double xp = 50.0;
 	private double yn = 0.0;
 	private double yp = 50.0;
-	
-	private EditorPoint clicked = null;
 
 	public Editor() {
 		/**
@@ -63,7 +61,7 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		
 		
 		//temporário, apenas para teste
-		shapes.add(new Line());
+		//shapes.add(new Line(new EditorPoint(10.0, 5.0), new  EditorPoint(30.0, 15.0)));
 	}
 
 	public GLCanvas getCanvas() {
@@ -90,13 +88,11 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		 gl.glMatrixMode(GL.GL_MODELVIEW);
 		 gl.glLoadIdentity();
 
-		 // configurar window
 		 glu.gluOrtho2D(0, editorWidth * 0.1, 0, editorHeight * 0.1);
 		 
 		 for (Shape s : shapes) {
 			 s.draw(gl);
 		 }
-
 		 gl.glFlush();
 	}
 
@@ -139,10 +135,6 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
-		clicked = normalizePoint(e.getX(), e.getY());
-		
-		glDrawable.display();
 		
 	}
 
