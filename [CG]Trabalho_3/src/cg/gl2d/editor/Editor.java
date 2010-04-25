@@ -35,9 +35,9 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 	private int editorHeight;
 	
 	private double xn = 0.0;
-	private double xp = 50.0;
+	private double xp = 0.0;
 	private double yn = 0.0;
-	private double yp = 50.0;
+	private double yp = 0.0;
 
 	public Editor() {
 		/**
@@ -61,7 +61,7 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		
 		
 		//temporário, apenas para teste
-		//shapes.add(new Line(new EditorPoint(10.0, 5.0), new  EditorPoint(30.0, 15.0)));
+		shapes.add(new Line(new EditorPoint(10.0, 5.0), new  EditorPoint(30.0, 15.0)));
 	}
 
 	public GLCanvas getCanvas() {
@@ -88,7 +88,7 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		 gl.glMatrixMode(GL.GL_MODELVIEW);
 		 gl.glLoadIdentity();
 
-		 glu.gluOrtho2D(0, editorWidth * 0.1, 0, editorHeight * 0.1);
+		 glu.gluOrtho2D(xn, xp, yn, yp);
 		 
 		 for (Shape s : shapes) {
 			 s.draw(gl);
@@ -106,6 +106,16 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int width, int height) {
 		editorWidth = width;
 		editorHeight = height;
+		double w = width * 0.1;
+		double h = height * 0.1;
+		
+		if (xp == xn && yp == yn) {
+			xp = w;
+			yp = h;
+		} else {
+			xp = w - xn;
+			yn = yp - h;
+		}
 	}
 
 	@Override
