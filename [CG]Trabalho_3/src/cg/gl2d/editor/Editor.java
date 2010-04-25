@@ -5,6 +5,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.media.opengl.DebugGL;
 import javax.media.opengl.GL;
@@ -15,6 +17,8 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
 import cg.gl2d.model.EditorPoint;
+import cg.gl2d.model.Line;
+import cg.gl2d.model.Shape;
 import cg.gl2d.model.Utils;
 
 public class Editor implements GLEventListener, KeyListener, MouseListener, MouseMotionListener {
@@ -24,6 +28,8 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 	private GL gl;
 	private GLU glu;
 	private GLAutoDrawable glDrawable;
+	
+	private List<Shape> shapes = new ArrayList<Shape>();
 	
 	private int editorWidth;
 	private int editorHeight;
@@ -54,6 +60,10 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		canvas.addKeyListener(this);
 		canvas.addMouseListener(this);
 		canvas.addMouseMotionListener(this);
+		
+		
+		//temporário, apenas para teste
+		shapes.add(new Line());
 	}
 
 	public GLCanvas getCanvas() {
@@ -81,24 +91,10 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		 gl.glLoadIdentity();
 
 		 // configurar window
-		 glu.gluOrtho2D(xn, xp, yn, yp);
-
-		 // configurar cor de desenho (valores r, g, b)
-		 gl.glColor3f(0.0f, 0.0f, 0.0f);
-
-		 gl.glBegin(GL.GL_LINES);
-		 	gl.glVertex2d(xn + 5, yp * 0.5);
-		 	gl.glVertex2d(xp - 5, yp * 0.5);
-
-		 	gl.glVertex2d(xp * 0.5, yp - 5);
-		 	gl.glVertex2d(xp * 0.5, yn + 5);
-		 gl.glEnd();
+		 glu.gluOrtho2D(0, editorHeight * 0.1, 0, editorWidth * 0.1);
 		 
-		 if (clicked != null) {		
-			 gl.glPointSize(6.0f);
-			 gl.glBegin(GL.GL_POINTS);
-			 	gl.glVertex2d(clicked.x, clicked.y);
-			 gl.glEnd();
+		 for (Shape s : shapes) {
+			 s.draw(gl);
 		 }
 
 		 gl.glFlush();
