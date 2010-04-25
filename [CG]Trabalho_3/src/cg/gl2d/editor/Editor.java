@@ -21,36 +21,43 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 
+import cg.gl2d.model.Circle;
+import cg.gl2d.model.ClosedPoligon;
 import cg.gl2d.model.EditorPoint;
 import cg.gl2d.model.Line;
+import cg.gl2d.model.OpenPoligon;
+import cg.gl2d.model.Poligon;
 import cg.gl2d.model.Shape;
-import cg.gl2d.model.SinglePoint;
 import cg.gl2d.model.Utils;
 
 public class Editor extends JPanel implements GLEventListener, KeyListener, MouseListener, MouseMotionListener, AdjustmentListener {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private JScrollBar verticalScrollBar;
 	private JScrollBar horizontalScrollBar;
-	
+
 	private GLCanvas canvas;
 	private GLCapabilities capabilities;
 	private GL gl;
 	private GLU glu;
 	private GLAutoDrawable glDrawable;
-	
+
 	private List<Shape> shapes = new ArrayList<Shape>();
-	
+
 	private int editorWidth;
 	private int editorHeight;
 	private int verticalScroll = 0;
 	private int horizontalScroll = 0;
-	
+
 	private double xn = 0.0;
 	private double xp = 0.0;
 	private double yn = 0.0;
 	private double yp = 0.0;
+
+	private Shape shapeAtual;
+	
+	private char shapeEscolhido = 'A';
 
 	public Editor() {
 		/*
@@ -87,9 +94,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		add(canvas, BorderLayout.CENTER);
 		add(verticalScrollBar, BorderLayout.EAST);
 		add(horizontalScrollBar, BorderLayout.SOUTH);
-		
-		//temporário, apenas para teste
-		shapes.add(new Line(new EditorPoint(10.0, 5.0), new  EditorPoint(30.0, 15.0)));
+
+		// temporário, apenas para teste
+		shapes.add(new Line(new EditorPoint(10.0, 5.0), new EditorPoint(30.0, 15.0)));
 	}
 
 	public void focus() {
@@ -108,16 +115,16 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	@Override
 	public void display(GLAutoDrawable arg0) {
-		 gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		 gl.glMatrixMode(GL.GL_MODELVIEW);
-		 gl.glLoadIdentity();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glLoadIdentity();
 
-		 glu.gluOrtho2D(xn, xp, yn, yp);
-		 
-		 for (Shape s : shapes) {
-			 s.draw(gl);
-		 }
-		 gl.glFlush();
+		glu.gluOrtho2D(xn, xp, yn, yp);
+
+		for (Shape s : shapes) {
+			s.draw(gl);
+		}
+		gl.glFlush();
 	}
 
 	@Override
@@ -132,7 +139,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		editorHeight = height;
 		double w = width * 0.1;
 		double h = height * 0.1;
-		
+
 		if (xp == xn && yp == yn) {
 			xp = w;
 			yp = h;
@@ -158,7 +165,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			 */
 			int v = e.getValue() - horizontalScroll;
 			horizontalScroll = e.getValue();
-			xn += v * 0.1;  
+			xn += v * 0.1;
 			xp = editorWidth * 0.1 + xn;
 		}
 		glDrawable.display();
@@ -168,20 +175,20 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_SPACE)
 			glDrawable.display();
+		
+		if (e.getKeyChar() == 'A' || e.getKeyChar() == 'F' || e.getKeyChar() == 'C' ){
+			shapeEscolhido = e.getKeyChar();
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-
 	}
-	
+
 	private EditorPoint normalizePoint(int x, int y) {
 		EditorPoint p = new EditorPoint();
 		p.x = Utils.normalize(0, x, editorWidth, xn, xp);
@@ -191,47 +198,76 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
-		// temporario, apenas para teste
-		EditorPoint p = normalizePoint(e.getX(), e.getY());
-		shapes.add(new SinglePoint(p));
+
+		if (e.getClickCount() == 2 && shapeAtual != null) {
+			shapeAtual.finishDrawing();
+			shapeAtual = null;
+			glDrawable.display();
+			return;
+		}
+
+		EditorPoint clicked = normalizePoint(e.getX(), e.getY());
+
+		if (shapeAtual == null) {
+			switch(shapeEscolhido){
+			case 'A': {
+				shapeAtual = new OpenPoligon();
+				shapes.add(shapeAtual);
+				((Poligon)shapeAtual).addPoint(clicked);
+				break;
+			}
+			case 'F':{
+				shapeAtual = new ClosedPoligon();
+				shapes.add(shapeAtual);
+				((Poligon)shapeAtual).addPoint(clicked);
+				break;
+			}
+			case 'C':{
+				shapeAtual = new Circle();
+				((Circle)shapeAtual).setCenter(clicked);
+				shapes.add(shapeAtual);
+				System.out.println("Circulo criado");
+				break;
+			}
+			}
+		}
+
+		if(shapeEscolhido == 'A' || shapeEscolhido == 'F'){
+			((Poligon)shapeAtual).addPoint(clicked);
+		}
+
 		glDrawable.display();
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if (glDrawable == null)
+			return;
 
+		if (shapeAtual != null) {
+			shapeAtual.mouseMoved(normalizePoint(e.getX(), e.getY()));
+			glDrawable.display();
+		}
 	}
 
 }

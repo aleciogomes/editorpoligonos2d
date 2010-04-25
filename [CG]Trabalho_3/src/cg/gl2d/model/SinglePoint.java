@@ -19,5 +19,11 @@ public class SinglePoint extends Shape {
 		 	gl.glVertex2d(point.x, point.y);
 		 gl.glEnd();
 	}
+	
+	@Override
+	public void mouseMoved(EditorPoint eventPoint) { } // no action
+	
+	@Override
+	public void finishDrawing() { }
 
 }
