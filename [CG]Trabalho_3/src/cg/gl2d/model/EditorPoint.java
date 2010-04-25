@@ -19,5 +19,10 @@ public class EditorPoint {
 		this.x = x;
 		this.y = y;
 	}
+	
+	@Override
+	public String toString() {
+		return "EditorPoint(x = "+ x +"; y = "+ y +")";
+	}
 
 }

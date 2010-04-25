@@ -1,5 +1,8 @@
 package cg.gl2d.editor;
 
+import java.awt.BorderLayout;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -15,14 +18,22 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 
 import cg.gl2d.model.EditorPoint;
 import cg.gl2d.model.Line;
 import cg.gl2d.model.Shape;
+import cg.gl2d.model.SinglePoint;
 import cg.gl2d.model.Utils;
 
-public class Editor implements GLEventListener, KeyListener, MouseListener, MouseMotionListener {
+public class Editor extends JPanel implements GLEventListener, KeyListener, MouseListener, MouseMotionListener, AdjustmentListener {
 
+	private static final long serialVersionUID = 1L;
+	
+	private JScrollBar verticalScrollBar;
+	private JScrollBar horizontalScrollBar;
+	
 	private GLCanvas canvas;
 	private GLCapabilities capabilities;
 	private GL gl;
@@ -33,6 +44,8 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 	
 	private int editorWidth;
 	private int editorHeight;
+	private int verticalScroll = 0;
+	private int horizontalScroll = 0;
 	
 	private double xn = 0.0;
 	private double xp = 0.0;
@@ -40,7 +53,7 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 	private double yp = 0.0;
 
 	public Editor() {
-		/**
+		/*
 		 * Cria um objeto GLCapabilities para especificar o número de bits por
 		 * pixel para RGBA
 		 */
@@ -49,7 +62,7 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		capabilities.setBlueBits(8);
 		capabilities.setGreenBits(8);
 		capabilities.setAlphaBits(8);
-		/**
+		/*
 		 * Cria um objecto GLCanvas e adiciona o Editor como listener dos
 		 * eventos do GL, do teclado e do mouse.
 		 */
@@ -58,14 +71,25 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 		canvas.addKeyListener(this);
 		canvas.addMouseListener(this);
 		canvas.addMouseMotionListener(this);
-		
+		/*
+		 * Cria as barras de rolagem vertical e horizontal
+		 */
+		verticalScrollBar = new JScrollBar(JScrollBar.VERTICAL);
+		verticalScrollBar.setMaximum(2000);
+		verticalScrollBar.addAdjustmentListener(this);
+		horizontalScrollBar = new JScrollBar(JScrollBar.HORIZONTAL);
+		horizontalScrollBar.setMaximum(2000);
+		horizontalScrollBar.addAdjustmentListener(this);
+		/*
+		 * Monta o layout do editor
+		 */
+		setLayout(new BorderLayout());
+		add(canvas, BorderLayout.CENTER);
+		add(verticalScrollBar, BorderLayout.EAST);
+		add(horizontalScrollBar, BorderLayout.SOUTH);
 		
 		//temporário, apenas para teste
 		shapes.add(new Line(new EditorPoint(10.0, 5.0), new  EditorPoint(30.0, 15.0)));
-	}
-
-	public GLCanvas getCanvas() {
-		return canvas;
 	}
 
 	public void focus() {
@@ -113,9 +137,31 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 			xp = w;
 			yp = h;
 		} else {
-			xp = w - xn;
+			xp = w + xn;
 			yn = yp - h;
 		}
+	}
+
+	@Override
+	public void adjustmentValueChanged(AdjustmentEvent e) {
+		if (e.getSource() == verticalScrollBar) {
+			/*
+			 * Scroll vertival
+			 */
+			int v = e.getValue() - verticalScroll;
+			verticalScroll = e.getValue();
+			yp -= v * 0.1;
+			yn = yp - editorHeight * 0.1;
+		} else {
+			/*
+			 * Scroll horizontal
+			 */
+			int v = e.getValue() - horizontalScroll;
+			horizontalScroll = e.getValue();
+			xn += v * 0.1;  
+			xp = editorWidth * 0.1 + xn;
+		}
+		glDrawable.display();
 	}
 
 	@Override
@@ -146,6 +192,10 @@ public class Editor implements GLEventListener, KeyListener, MouseListener, Mous
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		
+		// temporario, apenas para teste
+		EditorPoint p = normalizePoint(e.getX(), e.getY());
+		shapes.add(new SinglePoint(p));
+		glDrawable.display();
 	}
 
 	@Override

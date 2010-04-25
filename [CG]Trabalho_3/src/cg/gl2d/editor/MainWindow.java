@@ -18,7 +18,7 @@ public class MainWindow extends JFrame{
 		getContentPane().setLayout(new BorderLayout());
 
 		editor = new Editor();
-		add(editor.getCanvas(), BorderLayout.CENTER);
+		add(editor, BorderLayout.CENTER);
 	}		
 	
 	public void requestEditorFocus() {
