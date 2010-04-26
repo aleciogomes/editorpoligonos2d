@@ -22,11 +22,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 
 import cg.gl2d.model.Circle;
-import cg.gl2d.model.ClosedPoligon;
+import cg.gl2d.model.ClosedPolygon;
 import cg.gl2d.model.EditorPoint;
 import cg.gl2d.model.Line;
-import cg.gl2d.model.OpenPoligon;
-import cg.gl2d.model.Poligon;
+import cg.gl2d.model.OpenPolygon;
+import cg.gl2d.model.Polygon;
 import cg.gl2d.model.Shape;
 import cg.gl2d.model.Utils;
 
@@ -176,7 +176,12 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		if (e.getKeyCode() == KeyEvent.VK_SPACE)
 			glDrawable.display();
 		
-		if (e.getKeyChar() == 'A' || e.getKeyChar() == 'F' || e.getKeyChar() == 'C' ){
+		if (e.getKeyChar() == 'A' || 
+			e.getKeyChar() == 'a' || 
+			e.getKeyChar() == 'F' || 
+			e.getKeyChar() == 'f' || 
+			e.getKeyChar() == 'C' ||
+			e.getKeyChar() == 'c'  ){
 			shapeEscolhido = e.getKeyChar();
 		}
 	}
@@ -211,15 +216,15 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		if (shapeAtual == null) {
 			switch(shapeEscolhido){
 			case 'A': {
-				shapeAtual = new OpenPoligon();
+				shapeAtual = new OpenPolygon();
 				shapes.add(shapeAtual);
-				((Poligon)shapeAtual).addPoint(clicked);
+				((Polygon)shapeAtual).addPoint(clicked);
 				break;
 			}
 			case 'F':{
-				shapeAtual = new ClosedPoligon();
+				shapeAtual = new ClosedPolygon();
 				shapes.add(shapeAtual);
-				((Poligon)shapeAtual).addPoint(clicked);
+				((Polygon)shapeAtual).addPoint(clicked);
 				break;
 			}
 			case 'C':{
@@ -233,7 +238,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 
 		if(shapeEscolhido == 'A' || shapeEscolhido == 'F'){
-			((Poligon)shapeAtual).addPoint(clicked);
+			((Polygon)shapeAtual).addPoint(clicked);
 		}
 
 		glDrawable.display();

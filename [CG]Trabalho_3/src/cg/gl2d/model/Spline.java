@@ -15,8 +15,6 @@ public class Spline extends Shape {
 	@Override
 	public void draw(GL gl) {
 		
-
-		
 	}
 
 	@Override

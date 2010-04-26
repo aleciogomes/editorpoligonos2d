@@ -6,9 +6,11 @@ public class Circle extends Shape {
 	
 	private double radius;
 	private EditorPoint center;
+	private BoundBox bbox;
 	
 	public Circle(){
 		radius = 0;
+		bbox = new BoundBox(this);
 	}
 
 	@Override
@@ -17,8 +19,6 @@ public class Circle extends Shape {
 		
 		final int qtdPontos = 36;
 	    final double angulo = 2 * Math.PI / (double)qtdPontos; 
-	    
-	    System.out.println("C x: " + center.x +  " y: " + center.y);
 
 	    gl.glBegin(GL.GL_LINE_LOOP);
 	    for(int i = 1; i <= qtdPontos; i++)
@@ -26,6 +26,8 @@ public class Circle extends Shape {
 	        gl.glVertex2d( Math.cos(i * angulo) * radius + center.x, Math.sin(i * angulo) * radius + center.y);
 	    }
 	    gl.glEnd();
+	    
+	    bbox.draw(gl);
 	}
 
 	@Override
@@ -34,7 +36,8 @@ public class Circle extends Shape {
 		double y = (eventPoint.y - center.y);
 		
 		radius = Math.sqrt( (x * x) + (y * y) );
-		System.out.println("Novo raio: " + radius);
+		
+		bbox.calcular();
 	}
 	
 	@Override
@@ -42,5 +45,13 @@ public class Circle extends Shape {
 
 	public void setCenter(EditorPoint center) {
 		this.center = center;
+	}
+	
+	public EditorPoint getCenter(){
+		return center;
+	}
+	
+	public double getRadius(){
+		return radius;
 	}
 }

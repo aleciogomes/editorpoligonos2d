@@ -5,14 +5,16 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 
-public class Poligon extends Shape {
+public class Polygon extends Shape {
 	
 	private int drawPrimitive;
 	private List<EditorPoint> points;
+	private BoundBox bbox;
 	
-	public Poligon(int drawPrimitive){
+	public Polygon(int drawPrimitive){
 		this.drawPrimitive = drawPrimitive;
 		this.points = new ArrayList<EditorPoint>();
+		this.bbox = new BoundBox(this);
 	}
 	
 	public void addPoint(EditorPoint point) {
@@ -26,6 +28,10 @@ public class Poligon extends Shape {
 	public int getPointsCount() {
 		return points.size();
 	}
+	
+	public List<EditorPoint> getPoints(){
+		return points;
+	}
 
 	@Override
 	public void draw(GL gl) {
@@ -36,6 +42,8 @@ public class Poligon extends Shape {
 			gl.glVertex2d(p.x, p.y);
 		}
 		gl.glEnd();
+		
+		bbox.draw(gl);
 	}
 
 	@Override
@@ -49,5 +57,6 @@ public class Poligon extends Shape {
 	@Override
 	public void finishDrawing() { 
 		removeLastPoint();
+		bbox.calcular();
 	}
 }

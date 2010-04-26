@@ -2,9 +2,9 @@ package cg.gl2d.model;
 
 import javax.media.opengl.GL;
 
-public class OpenPoligon extends Poligon {
+public class OpenPolygon extends Polygon {
 
-	public OpenPoligon() {
+	public OpenPolygon() {
 		super(GL.GL_LINE_STRIP);
 	}
 

@@ -2,9 +2,9 @@ package cg.gl2d.model;
 
 import javax.media.opengl.GL;
 
-public class ClosedPoligon extends Poligon {
+public class ClosedPolygon extends Polygon {
 	
-	public ClosedPoligon() {
+	public ClosedPolygon() {
 		super(GL.GL_LINE_LOOP);
 	}
 
