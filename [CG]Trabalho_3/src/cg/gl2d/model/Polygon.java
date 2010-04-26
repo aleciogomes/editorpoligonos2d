@@ -6,17 +6,15 @@ import java.util.List;
 import javax.media.opengl.GL;
 
 public class Polygon extends Shape {
-	
+
 	private int drawPrimitive;
 	private List<EditorPoint> points;
-	private BoundBox bbox;
-	
-	public Polygon(int drawPrimitive){
+
+	public Polygon(int drawPrimitive) {
 		this.drawPrimitive = drawPrimitive;
 		this.points = new ArrayList<EditorPoint>();
-		this.bbox = new BoundBox(this);
 	}
-	
+
 	public void addPoint(EditorPoint point) {
 		points.add(point);
 	}
@@ -28,8 +26,8 @@ public class Polygon extends Shape {
 	public int getPointsCount() {
 		return points.size();
 	}
-	
-	public List<EditorPoint> getPoints(){
+
+	public List<EditorPoint> getPoints() {
 		return points;
 	}
 
@@ -42,8 +40,10 @@ public class Polygon extends Shape {
 			gl.glVertex2d(p.x, p.y);
 		}
 		gl.glEnd();
-		
-		bbox.draw(gl);
+
+		//if (selected) {
+			boundBox.draw(gl);
+		//}
 	}
 
 	@Override
@@ -53,10 +53,10 @@ public class Polygon extends Shape {
 			addPoint(eventPoint);
 		}
 	}
-	
+
 	@Override
-	public void finishDrawing() { 
+	public void finishDrawing() {
 		removeLastPoint();
-		bbox.calcular();
+		boundBox.calcular();
 	}
 }

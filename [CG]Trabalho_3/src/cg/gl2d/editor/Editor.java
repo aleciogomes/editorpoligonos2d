@@ -28,6 +28,7 @@ import cg.gl2d.model.Line;
 import cg.gl2d.model.OpenPolygon;
 import cg.gl2d.model.Polygon;
 import cg.gl2d.model.Shape;
+import cg.gl2d.model.Spline;
 import cg.gl2d.model.Utils;
 
 public class Editor extends JPanel implements GLEventListener, KeyListener, MouseListener, MouseMotionListener, AdjustmentListener {
@@ -56,8 +57,10 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private double yp = 0.0;
 
 	private Shape shapeAtual;
-	
+
 	private char shapeEscolhido = 'A';
+
+	private boolean desenho = true;
 
 	public Editor() {
 		/*
@@ -143,7 +146,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		if (xp == xn && yp == yn) {
 			xp = w;
 			yp = h;
-		} else {
+		}
+		else {
 			xp = w + xn;
 			yn = yp - h;
 		}
@@ -159,7 +163,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			verticalScroll = e.getValue();
 			yp -= v * 0.1;
 			yn = yp - editorHeight * 0.1;
-		} else {
+		}
+		else {
 			/*
 			 * Scroll horizontal
 			 */
@@ -175,14 +180,13 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_SPACE)
 			glDrawable.display();
-		
-		if (e.getKeyChar() == 'A' || 
-			e.getKeyChar() == 'a' || 
-			e.getKeyChar() == 'F' || 
-			e.getKeyChar() == 'f' || 
-			e.getKeyChar() == 'C' ||
-			e.getKeyChar() == 'c'  ){
+
+		if (e.getKeyChar() == 'A' || e.getKeyChar() == 'a' || e.getKeyChar() == 'F' || e.getKeyChar() == 'f' || e.getKeyChar() == 'C' || e.getKeyChar() == 'c' || e.getKeyChar() == 'S' || e.getKeyChar() == 's') {
 			shapeEscolhido = e.getKeyChar();
+		}
+
+		if (e.getKeyChar() == 'L' || e.getKeyChar() == 'l') {
+			desenho = !desenho;
 		}
 	}
 
@@ -204,41 +208,69 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	@Override
 	public void mouseClicked(MouseEvent e) {
 
-		if (e.getClickCount() == 2 && shapeAtual != null) {
-			shapeAtual.finishDrawing();
-			shapeAtual = null;
-			glDrawable.display();
-			return;
-		}
-
 		EditorPoint clicked = normalizePoint(e.getX(), e.getY());
 
-		if (shapeAtual == null) {
-			switch(shapeEscolhido){
-			case 'A': {
-				shapeAtual = new OpenPolygon();
-				shapes.add(shapeAtual);
-				((Polygon)shapeAtual).addPoint(clicked);
-				break;
+		if (desenho) {
+			if (e.getClickCount() == 2 && shapeAtual != null) {
+				shapeAtual.finishDrawing();
+				shapeAtual = null;
+				glDrawable.display();
+				return;
 			}
-			case 'F':{
-				shapeAtual = new ClosedPolygon();
-				shapes.add(shapeAtual);
-				((Polygon)shapeAtual).addPoint(clicked);
-				break;
+
+			if (shapeAtual == null) {
+				switch (shapeEscolhido) {
+				case 'A': {
+					shapeAtual = new OpenPolygon();
+					shapes.add(shapeAtual);
+					((Polygon) shapeAtual).addPoint(clicked);
+					break;
+				}
+				case 'F': {
+					shapeAtual = new ClosedPolygon();
+					shapes.add(shapeAtual);
+					((Polygon) shapeAtual).addPoint(clicked);
+					break;
+				}
+				case 'S': {
+					shapeAtual = new Spline();
+					shapes.add(shapeAtual);
+					((Polygon) shapeAtual).addPoint(clicked);
+					break;
+				}
+				case 'C': {
+					shapeAtual = new Circle();
+					((Circle) shapeAtual).setCenter(clicked);
+					shapes.add(shapeAtual);
+					System.out.println("Circulo criado");
+					break;
+				}
+				}
 			}
-			case 'C':{
-				shapeAtual = new Circle();
-				((Circle)shapeAtual).setCenter(clicked);
-				shapes.add(shapeAtual);
-				System.out.println("Circulo criado");
-				break;
-			}
+
+			if (shapeEscolhido == 'A' || shapeEscolhido == 'F' || shapeEscolhido == 'S') {
+				((Polygon) shapeAtual).addPoint(clicked);
 			}
 		}
+		else {
+			Shape selectedShape = null;
+			for (Shape s : shapes) {
+				if (selectedShape != null) {
+					break;
+				}
 
-		if(shapeEscolhido == 'A' || shapeEscolhido == 'F'){
-			((Polygon)shapeAtual).addPoint(clicked);
+				if (s.isPointInside(clicked)) {
+					s.setSelected(true);
+					selectedShape = s;
+					break;
+				}
+			}
+
+			if (selectedShape == null) {
+				for (Shape s : shapes) {
+					s.setSelected(false);
+				}
+			}
 		}
 
 		glDrawable.display();
