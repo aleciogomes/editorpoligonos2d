@@ -44,9 +44,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private GLAutoDrawable glDrawable;
 
 	private List<Shape> shapes = new ArrayList<Shape>();
-	
+
 	private EditorAction action;
-	
+
 	private EditorListener listener;
 
 	private int editorWidth;
@@ -60,10 +60,6 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private double yp = 0.0;
 
 	private Shape shapeAtual;
-
-	private char shapeEscolhido = 'A';
-
-	private boolean desenho = true;
 
 	private Shape selectedShape;
 
@@ -107,7 +103,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		add(canvas, BorderLayout.CENTER);
 		add(verticalScrollBar, BorderLayout.EAST);
 		add(horizontalScrollBar, BorderLayout.SOUTH);
-		
+
 		selectedShape = null;
 
 		setAction(EditorAction.select);
@@ -116,12 +112,12 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void focus() {
 		canvas.requestFocus();
 	}
-	
+
 	public void setAction(EditorAction action) {
 		this.action = action;
 		listener.actionChanged(action);
 	}
-	
+
 	public EditorAction getAction() {
 		return action;
 	}
@@ -200,14 +196,6 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_SPACE)
 			glDrawable.display();
-
-		if (e.getKeyChar() == 'A' || e.getKeyChar() == 'a' || e.getKeyChar() == 'F' || e.getKeyChar() == 'f' || e.getKeyChar() == 'C' || e.getKeyChar() == 'c' || e.getKeyChar() == 'S' || e.getKeyChar() == 's') {
-			shapeEscolhido = e.getKeyChar();
-		}
-
-		if (e.getKeyChar() == 'L' || e.getKeyChar() == 'l') {
-			desenho = !desenho;
-		}
 	}
 
 	@Override
@@ -230,67 +218,66 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 		EditorPoint clicked = normalizePoint(e.getX(), e.getY());
 
-		if (desenho) {
-			if (e.getClickCount() == 2 && shapeAtual != null) {
-				shapeAtual.finishDrawing();
-				shapeAtual = null;
-				glDrawable.display();
-				return;
-			}
+		if (e.getClickCount() == 2 && shapeAtual != null) {
+			shapeAtual.finishDrawing();
+			shapeAtual = null;
+			glDrawable.display();
+			return;
+		}
 
-			if (shapeAtual == null) {
-				switch (shapeEscolhido) {
-				case 'A': {
-					shapeAtual = new OpenPolygon();
-					shapes.add(shapeAtual);
-					((Polygon) shapeAtual).addPoint(clicked);
-					break;
-				}
-				case 'F': {
-					shapeAtual = new ClosedPolygon();
-					shapes.add(shapeAtual);
-					((Polygon) shapeAtual).addPoint(clicked);
-					break;
-				}
-				case 'S': {
-					shapeAtual = new Spline();
-					shapes.add(shapeAtual);
-					((Polygon) shapeAtual).addPoint(clicked);
-					break;
-				}
-				case 'C': {
-					shapeAtual = new Circle();
-					((Circle) shapeAtual).setCenter(clicked);
-					shapes.add(shapeAtual);
-					System.out.println("Circulo criado");
-					break;
-				}
-				}
-			}
-
-			if (shapeEscolhido == 'A' || shapeEscolhido == 'F' || shapeEscolhido == 'S') {
+		if (shapeAtual == null) {
+			switch (action) {
+			case openPolygon: {
+				shapeAtual = new OpenPolygon();
+				shapes.add(shapeAtual);
 				((Polygon) shapeAtual).addPoint(clicked);
+				break;
+			}
+			case closedPolygon: {
+				shapeAtual = new ClosedPolygon();
+				shapes.add(shapeAtual);
+				((Polygon) shapeAtual).addPoint(clicked);
+				break;
+			}
+			case spline: {
+				shapeAtual = new Spline();
+				shapes.add(shapeAtual);
+				((Polygon) shapeAtual).addPoint(clicked);
+				break;
+			}
+			case circle: {
+				shapeAtual = new Circle();
+				((Circle) shapeAtual).setCenter(clicked);
+				shapes.add(shapeAtual);
+				System.out.println("Circulo criado");
+				break;
+			}
+			case select: {
+				selectedShape = null;
+				for (Shape s : shapes) {
+					if (selectedShape != null) {
+						break;
+					}
+
+					if (s.isPointInside(clicked)) {
+						s.setSelected(true);
+						selectedShape = s;
+						break;
+					}
+				}
+
+				if (selectedShape == null) {
+					for (Shape s : shapes) {
+						s.setSelected(false);
+					}
+				}
+				break;
+			}
 			}
 		}
-		else {
-			selectedShape = null;
-			for (Shape s : shapes) {
-				if (selectedShape != null) {
-					break;
-				}
 
-				if (s.isPointInside(clicked)) {
-					s.setSelected(true);
-					selectedShape = s;
-					break;
-				}
-			}
-
-			if (selectedShape == null) {
-				for (Shape s : shapes) {
-					s.setSelected(false);
-				}
-			}
+		if (action == EditorAction.openPolygon || action == EditorAction.closedPolygon || action == EditorAction.spline) {
+			((Polygon) shapeAtual).addPoint(clicked);
 		}
 
 		glDrawable.display();
@@ -314,11 +301,11 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(glDrawable == null)
+		if (glDrawable == null)
 			return;
-		//System.out.println("Dragging.");
-		if( selectedShape != null ){
-			//System.out.println("Calling update");
+		// System.out.println("Dragging.");
+		if (selectedShape != null) {
+			// System.out.println("Calling update");
 			selectedShape.update(normalizePoint(e.getX(), e.getY()));
 			glDrawable.display();
 		}
