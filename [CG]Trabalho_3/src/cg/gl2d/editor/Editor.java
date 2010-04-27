@@ -24,7 +24,6 @@ import javax.swing.JScrollBar;
 import cg.gl2d.model.Circle;
 import cg.gl2d.model.ClosedPolygon;
 import cg.gl2d.model.EditorPoint;
-import cg.gl2d.model.Line;
 import cg.gl2d.model.OpenPolygon;
 import cg.gl2d.model.Polygon;
 import cg.gl2d.model.Shape;
@@ -66,11 +65,14 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	private boolean desenho = true;
 
+	private Shape selectedShape;
+
 	public Editor(EditorListener listener) {
 		/*
 		 * Armazena o listener de callback do editor
 		 */
 		this.listener = listener;
+
 		/*
 		 * Cria um objeto GLCapabilities para especificar o número de bits por
 		 * pixel para RGBA
@@ -106,6 +108,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		add(verticalScrollBar, BorderLayout.EAST);
 		add(horizontalScrollBar, BorderLayout.SOUTH);
 		
+		selectedShape = null;
+
 		setAction(EditorAction.select);
 	}
 
@@ -269,7 +273,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			}
 		}
 		else {
-			Shape selectedShape = null;
+			selectedShape = null;
 			for (Shape s : shapes) {
 				if (selectedShape != null) {
 					break;
@@ -310,6 +314,14 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		if(glDrawable == null)
+			return;
+		//System.out.println("Dragging.");
+		if( selectedShape != null ){
+			//System.out.println("Calling update");
+			selectedShape.update(normalizePoint(e.getX(), e.getY()));
+			glDrawable.display();
+		}
 	}
 
 	@Override
