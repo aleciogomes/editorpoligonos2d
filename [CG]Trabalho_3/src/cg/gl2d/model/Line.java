@@ -29,4 +29,17 @@ public class Line extends Shape {
 	@Override
 	public void finishDrawing() { }
 
+	@Override
+	public void update(EditorPoint newPoint) {
+		
+	}
+
+	@Override
+	public void mover(EditorPoint newPoint) {
+		p1.x = p1.x + newPoint.x;
+		p1.y = p1.y + newPoint.y;
+		
+		p2.x = p2.x + newPoint.x;
+		p2.y = p2.y + newPoint.y;
+	}
 }

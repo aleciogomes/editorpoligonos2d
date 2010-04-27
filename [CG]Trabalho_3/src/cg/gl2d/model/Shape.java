@@ -18,6 +18,10 @@ public abstract class Shape {
 	
 	public abstract void finishDrawing();
 	
+	public abstract void update(EditorPoint newPoint);
+	
+	public abstract void mover(EditorPoint newPoint);
+	
 	public boolean isPointInside(EditorPoint p){
 		if (p.x >= boundBox.getMin().x && p.y >= boundBox.getMin().y) {
 			if (p.x <= boundBox.getMax().x && p.y <= boundBox.getMax().y) {

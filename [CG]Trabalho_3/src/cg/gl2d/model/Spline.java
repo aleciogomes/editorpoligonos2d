@@ -32,7 +32,10 @@ public class Spline extends Polygon {
 		}
 		gl.glEnd();
 
-		boundBox.draw(gl);
+		if( selected ){
+			boundBox.draw(gl);
+			drawPoints(gl);
+		}
 	}
 
 	private float[] pointsToFloatArray() {

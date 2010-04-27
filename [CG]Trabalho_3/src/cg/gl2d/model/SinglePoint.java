@@ -26,4 +26,14 @@ public class SinglePoint extends Shape {
 	@Override
 	public void finishDrawing() { }
 
+	@Override
+	public void update(EditorPoint newPoint) {	
+	}
+
+	@Override
+	public void mover(EditorPoint newPoint) {
+		point.x = point.x + newPoint.x;
+		point.y = point.y + newPoint.y;
+	}
+	
 }

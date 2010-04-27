@@ -31,10 +31,7 @@ public class Circle extends Shape {
 
 	@Override
 	public void mouseMoved(EditorPoint eventPoint) {
-		double x = (eventPoint.x - center.x);
-		double y = (eventPoint.y - center.y);
-
-		radius = Math.sqrt((x * x) + (y * y));
+		radius = Utils.distanceBetwenPoints(center, eventPoint);
 
 		boundBox.calcular();
 	}
@@ -54,4 +51,17 @@ public class Circle extends Shape {
 	public double getRadius() {
 		return radius;
 	}
+
+	@Override
+	public void update(EditorPoint newPoint) {
+		setCenter(newPoint);
+		boundBox.calcular();
+	}
+
+	@Override
+	public void mover(EditorPoint newPoint) {
+		center.x = center.x + newPoint.x;
+		center.y = center.y + newPoint.y;
+	}
+	
 }

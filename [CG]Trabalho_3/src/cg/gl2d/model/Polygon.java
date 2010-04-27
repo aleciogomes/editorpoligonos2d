@@ -41,9 +41,16 @@ public class Polygon extends Shape {
 		}
 		gl.glEnd();
 
-		//if (selected) {
+		if (selected) {
+			drawPoints(gl);
 			boundBox.draw(gl);
-		//}
+		}
+	}
+
+	public void drawPoints(GL gl) {
+		for (EditorPoint p : points) {
+			p.draw(gl);
+		}
 	}
 
 	@Override
@@ -59,4 +66,64 @@ public class Polygon extends Shape {
 		removeLastPoint();
 		boundBox.calcular();
 	}
+
+	@Override
+	public boolean isPointInside(EditorPoint p) {
+
+		if (!super.isPointInside(p))
+			return false;
+
+		EditorPoint ptMenorDist = null;
+		double menorDist = Double.MAX_VALUE;
+
+		for (EditorPoint polygonPoint : points) {
+			double dist = Utils.distanceBetwenPoints(polygonPoint, p);
+
+			if (menorDist > dist) {
+				menorDist = dist;
+				ptMenorDist = polygonPoint;
+			}
+		}
+
+		ptMenorDist.setSelected(true);
+
+		for (EditorPoint polygonPoint : points) {
+			if (polygonPoint != ptMenorDist) {
+				polygonPoint.setSelected(false);
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public void update(EditorPoint newPoint) {
+		EditorPoint p = getSelectedPoint();
+
+		if (p != null) {
+			p.x = newPoint.x;
+			p.y = newPoint.y;
+			
+			boundBox.calcular();
+		}
+	}
+
+	@Override
+	public void mover(EditorPoint newPoint) {
+		for(EditorPoint p : points){
+			p.x = p.x + newPoint.x;
+			p.y = p.y + newPoint.y;
+		}
+	}
+
+	private EditorPoint getSelectedPoint() {
+		for (EditorPoint p : points) {
+			if (p.isSelected()) {
+				return p;
+			}
+		}
+
+		return null;
+	}
+
 }
