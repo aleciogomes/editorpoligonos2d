@@ -45,6 +45,10 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private GLAutoDrawable glDrawable;
 
 	private List<Shape> shapes = new ArrayList<Shape>();
+	
+	private EditorAction action;
+	
+	private EditorListener listener;
 
 	private int editorWidth;
 	private int editorHeight;
@@ -62,7 +66,11 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	private boolean desenho = true;
 
-	public Editor() {
+	public Editor(EditorListener listener) {
+		/*
+		 * Armazena o listener de callback do editor
+		 */
+		this.listener = listener;
 		/*
 		 * Cria um objeto GLCapabilities para especificar o número de bits por
 		 * pixel para RGBA
@@ -97,13 +105,21 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		add(canvas, BorderLayout.CENTER);
 		add(verticalScrollBar, BorderLayout.EAST);
 		add(horizontalScrollBar, BorderLayout.SOUTH);
-
-		// temporário, apenas para teste
-		shapes.add(new Line(new EditorPoint(10.0, 5.0), new EditorPoint(30.0, 15.0)));
+		
+		setAction(EditorAction.select);
 	}
 
 	public void focus() {
 		canvas.requestFocus();
+	}
+	
+	public void setAction(EditorAction action) {
+		this.action = action;
+		listener.actionChanged(action);
+	}
+	
+	public EditorAction getAction() {
+		return action;
 	}
 
 	@Override
