@@ -7,9 +7,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 public class MainWindow extends JFrame implements EditorListener, ActionListener {
@@ -22,6 +25,9 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	private JToggleButton closedPolygonButton;
 	private JToggleButton circleButton;
 	private JToggleButton splineButton;
+	private JButton zoomInButton;
+	private JButton zoomOutButton;
+	private int buttonOffset = 0;
 	
 	private Editor editor;
 	
@@ -42,41 +48,48 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	}
 	
 	private JPanel createToolBar() {
-		
-		selectButton = new JToggleButton(getImage("selectButton"));
-		selectButton.setToolTipText("Modo de seleção");
-		selectButton.setBounds(10, 5, 25, 25);
-		selectButton.addActionListener(this);
-		
-		openPolygonButton = new JToggleButton(getImage("openPolygonButton"));
-		openPolygonButton.setToolTipText("Desenhar polígono aberto");
-		openPolygonButton.setBounds(35, 5, 25, 25);
-		openPolygonButton.addActionListener(this);
-		
-		closedPolygonButton = new JToggleButton(getImage("closedPolygonButton"));
-		closedPolygonButton.setToolTipText("Desenhar polígono fechado");
-		closedPolygonButton.setBounds(60, 5, 25, 25);
-		closedPolygonButton.addActionListener(this);
-		
-		circleButton = new JToggleButton(getImage("circleButton"));
-		circleButton.setToolTipText("Desenhar círculo");
-		circleButton.setBounds(85, 5, 25, 25);
-		circleButton.addActionListener(this);
-		
-		splineButton = new JToggleButton(getImage("splineButton"));
-		splineButton.setToolTipText("Desenhar spline");
-		splineButton.setBounds(110, 5, 25, 25);
-		splineButton.addActionListener(this);
-		
 		toolBar = new JPanel();
 		toolBar.setLayout(null);
 		toolBar.setPreferredSize(new Dimension(getWidth(), 35));
-		toolBar.add(selectButton);
-		toolBar.add(openPolygonButton);
-		toolBar.add(closedPolygonButton);
-		toolBar.add(circleButton);
-		toolBar.add(splineButton);
+		createSeparator();
+		selectButton 		= createToggleButton("Modo de seleção"			, "selectButton");
+		openPolygonButton	= createToggleButton("Desenhar polígono aberto"	, "openPolygonButton");
+		closedPolygonButton = createToggleButton("Desenhar polígono fechado", "closedPolygonButton");
+		circleButton 		= createToggleButton("Desenhar círculo"			, "circleButton");
+		splineButton 		= createToggleButton("Desenhar spline"			, "splineButton");
+		createSeparator();
+		zoomInButton		= createButton("Zoom in"	, "zoomInButton");
+		zoomOutButton		= createButton("Zoom out"	, "zoomOutButton");
 		return toolBar;
+	}
+	
+	private JToggleButton createToggleButton(String text, String imageName) {
+		JToggleButton b = new JToggleButton(getImage(imageName));
+		b.setToolTipText(text);
+		b.setBounds(buttonOffset, 5, 25, 25);
+		b.addActionListener(this);
+		toolBar.add(b);
+		buttonOffset += 25;
+		return b;
+	}
+	
+	private JButton createButton(String text, String imageName) {
+		JButton b = new JButton(getImage(imageName));
+		b.setToolTipText(text);
+		b.setBounds(buttonOffset, 5, 25, 25);
+		b.setBorderPainted(true);
+		b.addActionListener(this);
+		toolBar.add(b);
+		buttonOffset += 25;
+		return b;
+	}
+	
+	private JSeparator createSeparator() {
+		JSeparator s = new JSeparator(SwingConstants.VERTICAL);
+		s.setBounds(buttonOffset + 4, 5, 5, 25);
+		buttonOffset += 10;
+		toolBar.add(s);
+		return s;
 	}
 	
 	private JPanel createEditor() {
@@ -90,14 +103,14 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	
 	public void actionChanged(EditorAction action) {
 		selectButton.setSelected(action == EditorAction.select);
-		selectButton.setBorderPainted(selectButton.isSelected());
 		openPolygonButton.setSelected(action == EditorAction.openPolygon);
-		openPolygonButton.setBorderPainted(openPolygonButton.isSelected());
 		closedPolygonButton.setSelected(action == EditorAction.closedPolygon);
-		closedPolygonButton.setBorderPainted(closedPolygonButton.isSelected());
 		circleButton.setSelected(action == EditorAction.circle);
-		circleButton.setBorderPainted(circleButton.isSelected());
 		splineButton.setSelected(action == EditorAction.spline);
+		openPolygonButton.setBorderPainted(openPolygonButton.isSelected());
+		closedPolygonButton.setBorderPainted(closedPolygonButton.isSelected());
+		circleButton.setBorderPainted(circleButton.isSelected());
+		selectButton.setBorderPainted(selectButton.isSelected());
 		splineButton.setBorderPainted(splineButton.isSelected());
 	}
 
@@ -113,6 +126,10 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 			editor.setAction(EditorAction.circle);
 		else if (e.getSource() == splineButton)
 			editor.setAction(EditorAction.spline);
+		else if (e.getSource() == zoomInButton)
+			editor.zoomIn();
+		else if (e.getSource() == zoomOutButton)
+			editor.zoomOut();
 	}
 	
 	private ImageIcon getImage(String imageName) {

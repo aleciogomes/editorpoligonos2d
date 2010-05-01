@@ -112,6 +112,14 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void focus() {
 		canvas.requestFocus();
 	}
+	
+	public void zoomIn() {
+		
+	}
+	
+	public void zoomOut() {
+		
+	}
 
 	public void setAction(EditorAction action) {
 		this.action = action;
