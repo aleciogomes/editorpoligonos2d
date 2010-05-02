@@ -114,6 +114,8 @@ public class Polygon extends Shape {
 			p.x = p.x + newPoint.x;
 			p.y = p.y + newPoint.y;
 		}
+		
+		boundBox.calcular();
 	}
 
 	private EditorPoint getSelectedPoint() {
