@@ -49,18 +49,21 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private EditorAction action;
 
 	private EditorListener listener;
-
+	
 	private int editorWidth;
 	private int editorHeight;
-	private int verticalScroll = 0;
-	private int horizontalScroll = 0;
+	private int verticalScroll = 1000;
+	private int horizontalScroll = 1000;
 	private double zoom = 0.1;
 	private boolean adjustingZoom = false;
+	private boolean enableZoomIn = true;
+	private boolean enableZoomOut = true;
 
-	private double xn = 0.0;
-	private double xp = 0.0;
-	private double yn = 0.0;
-	private double yp = 0.0;
+	private boolean initializing = true;
+	private double xn;
+	private double xp;
+	private double yn;
+	private double yp;
 
 	private Shape shapeAtual;
 
@@ -94,10 +97,12 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		 * Cria as barras de rolagem vertical e horizontal
 		 */
 		verticalScrollBar = new JScrollBar(JScrollBar.VERTICAL);
-		verticalScrollBar.setMaximum(2000);
+		verticalScrollBar.setMaximum(verticalScroll * 2);
+		verticalScrollBar.setValue(verticalScroll);
 		verticalScrollBar.addAdjustmentListener(this);
 		horizontalScrollBar = new JScrollBar(JScrollBar.HORIZONTAL);
-		horizontalScrollBar.setMaximum(2000);
+		horizontalScrollBar.setMaximum(horizontalScroll * 2);
+		horizontalScrollBar.setValue(horizontalScroll);
 		horizontalScrollBar.addAdjustmentListener(this);
 		/*
 		 * Monta o layout do editor
@@ -117,13 +122,13 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	}
 	
 	public void zoomIn() {
-		doZoom(-0.01);
-		listener.zoomEnable(zoom > 0.01, true);
+		if (enableZoomIn) 
+			doZoom(-0.01);
 	}
 	
 	public void zoomOut() {
-		doZoom(0.01);
-		listener.zoomEnable(true, zoom < 0.99);
+		if (enableZoomOut) 
+			doZoom(0.01);
 	}
 	
 	private void doZoom(double value) {
@@ -133,6 +138,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			EditorPoint e = normalizePoint(p1.x, p1.y);
 			
 			zoom += value;
+			enableZoomIn = zoom > 0.01;
+			enableZoomOut = zoom < 0.99;
+			listener.zoomEnable(enableZoomIn, enableZoomOut);
 			adjustOrthoSize();
 			
 			Point p2 = normalizeEditorPoint(e.x, e.y);
@@ -187,19 +195,24 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		xp = editorWidth * zoom + xn;
 		yn = yp - editorHeight * zoom;
 	}
+	
+	private void initializeOrthoSize() {
+		xp = (editorWidth * zoom) / 2;
+		xn = -xp;
+		yp = (editorHeight * zoom) / 2;
+		yn = -yp;
+		initializing = false;
+	}
 
 	@Override
 	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int width, int height) {
 		editorWidth = width;
 		editorHeight = height;
 
-		if (xp == xn && yp == yn) {
-			xp = width * zoom;
-			yp = height * zoom;
-		}
-		else {
+		if (initializing) 
+			initializeOrthoSize();
+		else 
 			adjustOrthoSize();
-		}
 	}
 
 	@Override
