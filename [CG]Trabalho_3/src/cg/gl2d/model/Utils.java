@@ -6,7 +6,7 @@ public class Utils {
 		return ((b - a) * ((f - d) / (double)(c - a))) + d;
 	}
 	
-	public static double distanceBetwenPoints(EditorPoint a, EditorPoint b){
+	public static double distanceBetweenPoints(EditorPoint a, EditorPoint b){
 		double x = (b.x - a.x);
 		double y = (b.y - a.y);
 

@@ -52,14 +52,14 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		toolBar.setLayout(null);
 		toolBar.setPreferredSize(new Dimension(getWidth(), 35));
 		createSeparator();
-		selectButton 		= createToggleButton("Modo de seleção"			, "selectButton");
+		selectButton 		= createToggleButton("Modo de seleção (ESC)"	, "selectButton");
 		openPolygonButton	= createToggleButton("Desenhar polígono aberto"	, "openPolygonButton");
 		closedPolygonButton = createToggleButton("Desenhar polígono fechado", "closedPolygonButton");
 		circleButton 		= createToggleButton("Desenhar círculo"			, "circleButton");
 		splineButton 		= createToggleButton("Desenhar spline"			, "splineButton");
 		createSeparator();
-		zoomInButton		= createButton("Zoom in"	, "zoomInButton");
-		zoomOutButton		= createButton("Zoom out"	, "zoomOutButton");
+		zoomInButton		= createButton("Zoom in (+)"	, "zoomInButton");
+		zoomOutButton		= createButton("Zoom out (-)"	, "zoomOutButton");
 		return toolBar;
 	}
 	
@@ -130,6 +130,11 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 			editor.zoomIn();
 		else if (e.getSource() == zoomOutButton)
 			editor.zoomOut();
+	}
+	
+	public void zoomEnable(boolean zoomIn, boolean zoomOut) {
+		zoomInButton.setEnabled(zoomIn);
+		zoomOutButton.setEnabled(zoomOut);
 	}
 	
 	private ImageIcon getImage(String imageName) {

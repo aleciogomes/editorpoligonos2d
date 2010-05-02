@@ -53,6 +53,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private int editorHeight;
 	private int verticalScroll = 0;
 	private int horizontalScroll = 0;
+	private double zoom = 0.1;
 
 	private double xn = 0.0;
 	private double xp = 0.0;
@@ -114,11 +115,19 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	}
 	
 	public void zoomIn() {
-		
+		doZoom(-0.01);
+		listener.zoomEnable(zoom > 0.01, true);
 	}
 	
 	public void zoomOut() {
-		
+		doZoom(0.01);
+		listener.zoomEnable(true, zoom < 0.99);
+	}
+	
+	private void doZoom(double value) {
+		zoom += value;
+		adjustOrthoSize();
+		glDrawable.display();
 	}
 
 	public void setAction(EditorAction action) {
@@ -145,6 +154,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();
+		
+		System.out.println(xn + "; " + xp + "; " + yn + "; " + yp + "; ");
 
 		glu.gluOrtho2D(xn, xp, yn, yp);
 
@@ -156,24 +167,24 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	@Override
 	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {
-		// TODO Auto-generated method stub
-
+	}
+	
+	private void adjustOrthoSize() {
+		xp = editorWidth * zoom + xn;
+		yn = yp - editorHeight * zoom;
 	}
 
 	@Override
 	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int width, int height) {
 		editorWidth = width;
 		editorHeight = height;
-		double w = width * 0.1;
-		double h = height * 0.1;
 
 		if (xp == xn && yp == yn) {
-			xp = w;
-			yp = h;
+			xp = width * zoom;
+			yp = height * zoom;
 		}
 		else {
-			xp = w + xn;
-			yn = yp - h;
+			adjustOrthoSize();
 		}
 	}
 
@@ -185,8 +196,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			 */
 			int v = e.getValue() - verticalScroll;
 			verticalScroll = e.getValue();
-			yp -= v * 0.1;
-			yn = yp - editorHeight * 0.1;
+			yp -= v * zoom;
 		}
 		else {
 			/*
@@ -194,16 +204,29 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			 */
 			int v = e.getValue() - horizontalScroll;
 			horizontalScroll = e.getValue();
-			xn += v * 0.1;
-			xp = editorWidth * 0.1 + xn;
+			xn += v * zoom;
 		}
+		adjustOrthoSize();
 		glDrawable.display();
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_SPACE)
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_SPACE:
 			glDrawable.display();
+			break;
+		case KeyEvent.VK_ESCAPE:
+			setAction(EditorAction.select);
+			break;
+		case KeyEvent.VK_MINUS:
+			zoomOut();
+			break;
+		case KeyEvent.VK_EQUALS:
+		case KeyEvent.VK_PLUS:
+			zoomIn();
+			break;
+		}
 	}
 
 	@Override
@@ -311,9 +334,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void mouseDragged(MouseEvent e) {
 		if (glDrawable == null)
 			return;
-		// System.out.println("Dragging.");
+
 		if (selectedShape != null) {
-			// System.out.println("Calling update");
+
 			selectedShape.update(normalizePoint(e.getX(), e.getY()));
 			glDrawable.display();
 		}

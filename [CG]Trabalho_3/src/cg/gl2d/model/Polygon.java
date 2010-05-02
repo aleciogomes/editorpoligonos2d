@@ -77,7 +77,7 @@ public class Polygon extends Shape {
 		double menorDist = Double.MAX_VALUE;
 
 		for (EditorPoint polygonPoint : points) {
-			double dist = Utils.distanceBetwenPoints(polygonPoint, p);
+			double dist = Utils.distanceBetweenPoints(polygonPoint, p);
 
 			if (menorDist > dist) {
 				menorDist = dist;

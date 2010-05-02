@@ -31,7 +31,7 @@ public class Circle extends Shape {
 
 	@Override
 	public void mouseMoved(EditorPoint eventPoint) {
-		radius = Utils.distanceBetwenPoints(center, eventPoint);
+		radius = Utils.distanceBetweenPoints(center, eventPoint);
 
 		boundBox.calcular();
 	}
