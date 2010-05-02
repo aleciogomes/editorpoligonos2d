@@ -1,6 +1,7 @@
 package cg.gl2d.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
@@ -54,6 +55,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private int verticalScroll = 0;
 	private int horizontalScroll = 0;
 	private double zoom = 0.1;
+	private boolean adjustingZoom = false;
 
 	private double xn = 0.0;
 	private double xp = 0.0;
@@ -125,9 +127,23 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	}
 	
 	private void doZoom(double value) {
-		zoom += value;
-		adjustOrthoSize();
-		glDrawable.display();
+		adjustingZoom = true;
+		try {
+			Point p1 = new Point(editorWidth / 2, editorHeight / 2);
+			EditorPoint e = normalizePoint(p1.x, p1.y);
+			
+			zoom += value;
+			adjustOrthoSize();
+			
+			Point p2 = normalizeEditorPoint(e.x, e.y);
+			verticalScrollBar.setValue(verticalScroll + (p2.y - p1.y));
+			horizontalScrollBar.setValue(horizontalScroll + (p2.x - p1.x));
+			adjustOrthoSize();
+			
+			glDrawable.display();
+		} finally {
+			adjustingZoom = false;
+		}
 	}
 
 	public void setAction(EditorAction action) {
@@ -155,8 +171,6 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();
 		
-		System.out.println(xn + "; " + xp + "; " + yn + "; " + yp + "; ");
-
 		glu.gluOrtho2D(xn, xp, yn, yp);
 
 		for (Shape s : shapes) {
@@ -192,7 +206,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		if (e.getSource() == verticalScrollBar) {
 			/*
-			 * Scroll vertival
+			 * Scroll vertical
 			 */
 			int v = e.getValue() - verticalScroll;
 			verticalScroll = e.getValue();
@@ -206,8 +220,10 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			horizontalScroll = e.getValue();
 			xn += v * zoom;
 		}
-		adjustOrthoSize();
-		glDrawable.display();
+		if (!adjustingZoom) {
+			adjustOrthoSize();
+			glDrawable.display();	
+		}
 	}
 
 	@Override
@@ -239,8 +255,15 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	private EditorPoint normalizePoint(int x, int y) {
 		EditorPoint p = new EditorPoint();
-		p.x = Utils.normalize(0, x, editorWidth, xn, xp);
-		p.y = Utils.normalize(0, editorHeight - y, editorHeight, yn, yp);
+		p.x = Utils.normalizeE(0, x, editorWidth, xn, xp);
+		p.y = Utils.normalizeE(0, editorHeight - y, editorHeight, yn, yp);
+		return p;
+	}
+	
+	private Point normalizeEditorPoint(double x, double y) {
+		Point p = new Point();
+		p.x = Utils.normalizeB(0, editorWidth, xn, x, xp);
+		p.y = editorHeight - Utils.normalizeB(0, editorHeight, yn, y, yp);
 		return p;
 	}
 
@@ -280,7 +303,6 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 				shapeAtual = new Circle();
 				((Circle) shapeAtual).setCenter(clicked);
 				shapes.add(shapeAtual);
-				System.out.println("Circulo criado");
 				break;
 			}
 			case select: {
