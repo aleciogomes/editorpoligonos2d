@@ -54,7 +54,7 @@ public class Circle extends Shape {
 
 	@Override
 	public void update(EditorPoint newPoint) {
-		setCenter(newPoint);
+		//setCenter(newPoint);
 		boundBox.calcular();
 	}
 
@@ -62,6 +62,7 @@ public class Circle extends Shape {
 	public void mover(EditorPoint newPoint) {
 		center.x = center.x + newPoint.x;
 		center.y = center.y + newPoint.y;
+		boundBox.calcular();
 	}
 	
 }
