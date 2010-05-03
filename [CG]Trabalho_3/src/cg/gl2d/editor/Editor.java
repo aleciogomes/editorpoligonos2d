@@ -49,7 +49,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private EditorAction action;
 
 	private EditorListener listener;
-	
+
 	private int editorWidth;
 	private int editorHeight;
 	private int verticalScroll = 1000;
@@ -66,8 +66,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private double yp;
 
 	private Shape shapeAtual;
-
 	private Shape selectedShape;
+	
+	private EditorPoint pontoAntes;
 
 	public Editor(EditorListener listener) {
 		/*
@@ -115,41 +116,44 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		selectedShape = null;
 
 		setAction(EditorAction.select);
+		
+		pontoAntes = new EditorPoint();
 	}
 
 	public void focus() {
 		canvas.requestFocus();
 	}
-	
+
 	public void zoomIn() {
-		if (enableZoomIn) 
+		if (enableZoomIn)
 			doZoom(-0.01);
 	}
-	
+
 	public void zoomOut() {
-		if (enableZoomOut) 
+		if (enableZoomOut)
 			doZoom(0.01);
 	}
-	
+
 	private void doZoom(double value) {
 		adjustingZoom = true;
 		try {
 			Point p1 = new Point(editorWidth / 2, editorHeight / 2);
 			EditorPoint e = normalizePoint(p1.x, p1.y);
-			
+
 			zoom += value;
 			enableZoomIn = zoom > 0.01;
 			enableZoomOut = zoom < 0.99;
 			listener.zoomEnable(enableZoomIn, enableZoomOut);
 			adjustOrthoSize();
-			
+
 			Point p2 = normalizeEditorPoint(e.x, e.y);
 			verticalScrollBar.setValue(verticalScroll + (p2.y - p1.y));
 			horizontalScrollBar.setValue(horizontalScroll + (p2.x - p1.x));
 			adjustOrthoSize();
-			
+
 			glDrawable.display();
-		} finally {
+		}
+		finally {
 			adjustingZoom = false;
 		}
 	}
@@ -178,7 +182,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		
+
 		glu.gluOrtho2D(xn, xp, yn, yp);
 
 		for (Shape s : shapes) {
@@ -190,12 +194,12 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	@Override
 	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {
 	}
-	
+
 	private void adjustOrthoSize() {
 		xp = editorWidth * zoom + xn;
 		yn = yp - editorHeight * zoom;
 	}
-	
+
 	private void initializeOrthoSize() {
 		xp = (editorWidth * zoom) / 2;
 		xn = -xp;
@@ -209,9 +213,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		editorWidth = width;
 		editorHeight = height;
 
-		if (initializing) 
+		if (initializing)
 			initializeOrthoSize();
-		else 
+		else
 			adjustOrthoSize();
 	}
 
@@ -235,7 +239,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 		if (!adjustingZoom) {
 			adjustOrthoSize();
-			glDrawable.display();	
+			glDrawable.display();
 		}
 	}
 
@@ -272,7 +276,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		p.y = Utils.normalizeE(0, editorHeight - y, editorHeight, yn, yp);
 		return p;
 	}
-	
+
 	private Point normalizeEditorPoint(double x, double y) {
 		Point p = new Point();
 		p.x = Utils.normalizeB(0, editorWidth, xn, x, xp);
@@ -372,7 +376,25 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 		if (selectedShape != null) {
 
-			selectedShape.update(normalizePoint(e.getX(), e.getY()));
+			EditorPoint clicked = normalizePoint(e.getX(), e.getY());
+
+			if (action == EditorAction.move) {
+				// primeira vez
+				if (pontoAntes.x == 0 && pontoAntes.y == 0) {
+					pontoAntes.x = clicked.x;
+					pontoAntes.y = clicked.y;
+				}
+
+				EditorPoint ptMove = new EditorPoint(clicked.x - pontoAntes.x, clicked.y - pontoAntes.y);
+
+				pontoAntes.x = clicked.x;
+				pontoAntes.y = clicked.y;
+
+				selectedShape.mover(ptMove);
+			}
+			else if (action == EditorAction.select) {
+				selectedShape.update(clicked);
+			}
 			glDrawable.display();
 		}
 	}
