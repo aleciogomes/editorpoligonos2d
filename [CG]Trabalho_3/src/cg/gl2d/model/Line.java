@@ -24,14 +24,23 @@ public class Line extends Shape {
 	}
 
 	@Override
-	public void mouseMoved(EditorPoint eventPoint) { } // no action
+	public void mouseMoving(EditorPoint eventPoint) { 
+	}
 	
 	@Override
-	public void finishDrawing() { }
+	public void finishDrawing() {
+	}
 
 	@Override
 	public void update(EditorPoint newPoint) {
-		
+	}
+	
+	@Override
+	public void scale(boolean enlarge) {	
+	}
+	
+	@Override
+	public void rotate(double angle) {	
 	}
 
 	@Override
@@ -42,4 +51,5 @@ public class Line extends Shape {
 		p2.x = p2.x + newPoint.x;
 		p2.y = p2.y + newPoint.y;
 	}
+	
 }

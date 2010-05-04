@@ -21,7 +21,7 @@ public class SinglePoint extends Shape {
 	}
 	
 	@Override
-	public void mouseMoved(EditorPoint eventPoint) { } // no action
+	public void mouseMoving(EditorPoint eventPoint) { } // no action
 	
 	@Override
 	public void finishDrawing() { }
@@ -29,11 +29,18 @@ public class SinglePoint extends Shape {
 	@Override
 	public void update(EditorPoint newPoint) {	
 	}
+	
+	@Override
+	public void scale(boolean enlarge) {	
+	}
+	
+	@Override
+	public void rotate(double angle) {	
+	}
 
 	@Override
 	public void mover(EditorPoint newPoint) {
 		point.x = point.x + newPoint.x;
 		point.y = point.y + newPoint.y;
-	}
-	
+	}	
 }

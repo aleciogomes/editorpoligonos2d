@@ -8,11 +8,13 @@ public class BoundBox {
 
 	private EditorPoint min;
 	private EditorPoint max;
+	private EditorPoint center;
 	private Shape shape;
 
 	public BoundBox(Shape shape) {
 		min = new EditorPoint(0, 0);
 		max = new EditorPoint(0, 0);
+		center = new EditorPoint(0, 0);
 		this.shape = shape;
 	}
 
@@ -23,6 +25,10 @@ public class BoundBox {
 	public EditorPoint getMax() {
 		return max;
 	}
+	
+	public EditorPoint getCenter(){
+		return center;
+	}
 
 	public void draw(GL gl) {
 		gl.glColor3f(0.0f, 1.0f, 1.0f);
@@ -31,6 +37,11 @@ public class BoundBox {
 		gl.glVertex2d(max.x, min.y);
 		gl.glVertex2d(max.x, max.y);
 		gl.glVertex2d(min.x, max.y);
+		gl.glEnd();
+		
+		gl.glPointSize(4.0f);
+		gl.glBegin(GL.GL_POINTS);
+		gl.glVertex2d(center.x, center.y);
 		gl.glEnd();
 	}
 
@@ -41,6 +52,7 @@ public class BoundBox {
 			min.y = circle.getCenter().y - circle.getRadius();
 			max.x = circle.getCenter().x + circle.getRadius();
 			max.y = circle.getCenter().y + circle.getRadius();
+			updateCenter();
 		}
 		else if (Polygon.class.isAssignableFrom(shape.getClass())) {
 			Polygon polygon = (Polygon) shape;
@@ -65,6 +77,12 @@ public class BoundBox {
 				if (p.y > max.y)
 					max.y = p.y;
 			}
+			updateCenter();
 		}
+	}
+	
+	private void updateCenter(){
+		center.x = ((max.x - min.x) / 2) + min.x;
+		center.y = ((max.y - min.y) / 2) + min.y;
 	}
 }

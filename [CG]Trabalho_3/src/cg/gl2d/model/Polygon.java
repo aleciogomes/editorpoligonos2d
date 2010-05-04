@@ -54,7 +54,7 @@ public class Polygon extends Shape {
 	}
 
 	@Override
-	public void mouseMoved(EditorPoint eventPoint) {
+	public void mouseMoving(EditorPoint eventPoint) {
 		if (getPointsCount() > 1) {
 			removeLastPoint();
 			addPoint(eventPoint);
@@ -101,20 +101,27 @@ public class Polygon extends Shape {
 		EditorPoint p = getSelectedPoint();
 
 		if (p != null) {
-			p.x = newPoint.x;
-			p.y = newPoint.y;
-			
-			boundBox.calcular();
+			if (Math.abs(newPoint.x - p.x) <= 3.0 && Math.abs(newPoint.y - p.y) <= 3.0) {
+				p.x = newPoint.x;
+				p.y = newPoint.y;
+
+				boundBox.calcular();
+			}
 		}
 	}
 
 	@Override
 	public void mover(EditorPoint newPoint) {
-		for(EditorPoint p : points){
-			p.x = p.x + newPoint.x;
-			p.y = p.y + newPoint.y;
+
+		Transform t = new Transform();
+		t.setElement(Transform.Lx, newPoint.x);
+		t.setElement(Transform.Ly, newPoint.y);
+		for (EditorPoint p : getPoints()) {
+			EditorPoint p2 = t.transformPoint(p);
+			p.x = p2.x;
+			p.y = p2.y;
 		}
-		
+
 		boundBox.calcular();
 	}
 
@@ -128,4 +135,24 @@ public class Polygon extends Shape {
 		return null;
 	}
 
+	@Override
+	public void scale(boolean enlarge) {
+		updatePointsByMatrix(internalScale(enlarge));
+	}
+	
+	@Override
+	public void rotate(double angle) {
+		updatePointsByMatrix(internalRotate(angle));
+	}
+	
+	private void updatePointsByMatrix(Transform matrix){
+		
+		for (EditorPoint p : getPoints()) {
+			EditorPoint p2 = matrix.transformPoint(p);
+			p.x = p2.x;
+			p.y = p2.y;
+		}
+
+		getBoundBox().calcular();
+	}
 }

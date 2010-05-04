@@ -67,7 +67,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	private Shape shapeAtual;
 	private Shape selectedShape;
-	
+
 	private EditorPoint pontoAntes;
 
 	public Editor(EditorListener listener) {
@@ -116,7 +116,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		selectedShape = null;
 
 		setAction(EditorAction.select);
-		
+
 		pontoAntes = new EditorPoint();
 	}
 
@@ -161,6 +161,17 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void setAction(EditorAction action) {
 		this.action = action;
 		listener.actionChanged(action);
+
+		if (this.action != EditorAction.move && this.action != EditorAction.select) {
+			// limpa a seleção
+			for (Shape s : shapes) {
+				s.setSelected(false);
+			}
+
+			// atualiza a tela se for possível
+			if (glDrawable != null)
+				glDrawable.display();
+		}
 	}
 
 	public EditorAction getAction() {
@@ -188,6 +199,16 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		for (Shape s : shapes) {
 			s.draw(gl);
 		}
+
+		gl.glColor3f(1.0f, 0.0f, 0.0f);
+		gl.glBegin(GL.GL_LINES);
+		gl.glVertex2d(-40.0, 0.0);
+		gl.glVertex2d(40.0, 0.0);
+
+		gl.glVertex2d(0.0, -40.0);
+		gl.glVertex2d(0.0, 40.0);
+		gl.glEnd();
+
 		gl.glFlush();
 	}
 
@@ -258,6 +279,20 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		case KeyEvent.VK_EQUALS:
 		case KeyEvent.VK_PLUS:
 			zoomIn();
+			break;
+		case KeyEvent.VK_COMMA: // ,
+		case KeyEvent.VK_PERIOD: // .
+			if (selectedShape != null) {
+				selectedShape.scale(e.getKeyCode() == KeyEvent.VK_PERIOD);
+				glDrawable.display();
+			}
+			break;
+		case KeyEvent.VK_N: // ,
+		case KeyEvent.VK_M: // .
+			if (selectedShape != null) {
+				selectedShape.rotate(e.getKeyCode() == KeyEvent.VK_N ? -90.0 : 90.0);
+				glDrawable.display();
+			}
 			break;
 		}
 	}
@@ -367,6 +402,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		pontoAntes.x = pontoAntes.y = 0.0;
 	}
 
 	@Override
@@ -405,7 +441,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			return;
 
 		if (shapeAtual != null) {
-			shapeAtual.mouseMoved(normalizePoint(e.getX(), e.getY()));
+			shapeAtual.mouseMoving(normalizePoint(e.getX(), e.getY()));
 			glDrawable.display();
 		}
 	}

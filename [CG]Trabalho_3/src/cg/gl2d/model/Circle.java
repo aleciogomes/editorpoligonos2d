@@ -10,6 +10,18 @@ public class Circle extends Shape {
 	public Circle() {
 		radius = 0;
 	}
+	
+	public void setCenter(EditorPoint center) {
+		this.center = center;
+	}
+
+	public EditorPoint getCenter() {
+		return center;
+	}
+
+	public double getRadius() {
+		return radius;
+	}
 
 	@Override
 	public void draw(GL gl) {
@@ -30,39 +42,37 @@ public class Circle extends Shape {
 	}
 
 	@Override
-	public void mouseMoved(EditorPoint eventPoint) {
+	public void mouseMoving(EditorPoint eventPoint) {
 		radius = Utils.distanceBetweenPoints(center, eventPoint);
-
-		boundBox.calcular();
 	}
 
 	@Override
 	public void finishDrawing() {
-	}
-
-	public void setCenter(EditorPoint center) {
-		this.center = center;
-	}
-
-	public EditorPoint getCenter() {
-		return center;
-	}
-
-	public double getRadius() {
-		return radius;
+		boundBox.calcular();
 	}
 
 	@Override
 	public void update(EditorPoint newPoint) {
-		//setCenter(newPoint);
 		boundBox.calcular();
 	}
 
 	@Override
-	public void mover(EditorPoint newPoint) {
-		center.x = center.x + newPoint.x;
-		center.y = center.y + newPoint.y;
+	public void mover(EditorPoint newPoint) {		
+		Transform t = new Transform();
+		t.setElement(Transform.Lx, newPoint.x);
+		t.setElement(Transform.Ly, newPoint.y);
+		
+		center = t.transformPoint(center);
+
 		boundBox.calcular();
+	}
+	
+	@Override
+	public void scale(boolean enlarge) {
+	}
+	
+	@Override
+	public void rotate(double angle) {
 	}
 	
 }
