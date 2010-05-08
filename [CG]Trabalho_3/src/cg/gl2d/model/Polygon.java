@@ -16,6 +16,10 @@ public class Polygon extends Shape {
 		this.drawPrimitive = drawPrimitive;
 		this.points = new ArrayList<EditorPoint>();
 	}
+	
+	public void setDrawPrimitive(int drawPrimitive){
+		this.drawPrimitive = drawPrimitive;
+	}
 
 	public void addPoint(EditorPoint point) {
 		points.add(point);
