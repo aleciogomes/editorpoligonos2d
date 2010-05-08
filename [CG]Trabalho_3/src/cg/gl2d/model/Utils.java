@@ -1,5 +1,7 @@
 package cg.gl2d.model;
 
+import java.util.List;
+
 public class Utils {
 	
 	public static double normalizeE(int a, int b, int c, double d, double f) {
@@ -15,6 +17,14 @@ public class Utils {
 		double y = (b.y - a.y);
 
 		return Math.sqrt((x * x) + (y * y));
+	}
+	
+	public static EditorPoint nextPointInList(List<EditorPoint> points, int index){
+		if(index + 1 >= points.size()){
+			return points.get(0);
+		}
+		
+		return points.get(index + 1);
 	}
 
 }

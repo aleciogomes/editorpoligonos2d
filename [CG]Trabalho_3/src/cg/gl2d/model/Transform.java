@@ -32,6 +32,10 @@ public class Transform {
 	}
 	
 	public void setAngle(double angulo){
+		
+		angulo = angulo * 2 * Math.PI;
+		angulo = angulo / 360;
+		
 		double cos = Math.cos(angulo);
 		double sen = Math.sin(angulo);
 		

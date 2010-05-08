@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.media.opengl.DebugGL;
@@ -69,6 +70,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private Shape selectedShape;
 
 	private EditorPoint pontoAntes;
+
+	double yi = 0.0;
 
 	public Editor(EditorListener listener) {
 		/*
@@ -209,6 +212,12 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		gl.glVertex2d(0.0, 40.0);
 		gl.glEnd();
 
+		gl.glColor3f(0.0f, 1.0f, 1.0f);
+		gl.glBegin(GL.GL_LINES);
+		gl.glVertex2d(xn, yi);
+		gl.glVertex2d(xp, yi);
+		gl.glEnd();
+
 		gl.glFlush();
 	}
 
@@ -287,10 +296,10 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 				glDrawable.display();
 			}
 			break;
-		case KeyEvent.VK_N: // ,
-		case KeyEvent.VK_M: // .
+		case KeyEvent.VK_N:
+		case KeyEvent.VK_M:
 			if (selectedShape != null) {
-				selectedShape.rotate(e.getKeyCode() == KeyEvent.VK_N ? -90.0 : 90.0);
+				selectedShape.rotate(e.getKeyCode() == KeyEvent.VK_N ? -45.0 : 45.0);
 				glDrawable.display();
 			}
 			break;
@@ -359,12 +368,14 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			}
 			case select: {
 				selectedShape = null;
+				LinkedList<Shape> selShapes = new LinkedList<Shape>();
 				for (Shape s : shapes) {
 					if (selectedShape != null) {
 						break;
 					}
 
 					if (s.isPointInside(clicked)) {
+						selShapes.add(s);
 						s.setSelected(true);
 						selectedShape = s;
 						break;
@@ -376,6 +387,43 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 						s.setSelected(false);
 					}
 				}
+
+				// scanline test
+				yi = clicked.y;
+				int interseccoes = 0;
+
+				for (Shape s : selShapes) {
+					Polygon p = (Polygon) s;
+					if (p.getPoints().size() > 1) {
+						for (int i = 0; i < p.getPoints().size(); i++) {
+							EditorPoint p1 = p.getPoints().get(i);
+							EditorPoint p2 = Utils.nextPointInList(p.getPoints(), i);
+							
+							if(p1.y != p2.y){
+								double ti = (yi - p1.y) / (p2.y - p1.y);
+
+								if (ti > 0.0 && ti < 1.0) {
+									double xi = p1.x + ((p2.x - p1.x) * ti);
+
+									if (xi > clicked.x) {
+										interseccoes++;
+									}
+									else if(xi == clicked.x){
+										interseccoes = 1;
+										break;
+									}
+								}
+
+							}
+							else{
+								
+							}
+						}
+					}
+				}
+
+				System.out.println("Poligono foi selecionado? " + ((interseccoes % 2) == 1));
+
 				break;
 			}
 			}

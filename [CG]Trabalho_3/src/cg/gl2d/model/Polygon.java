@@ -6,6 +6,8 @@ import java.util.List;
 import javax.media.opengl.GL;
 
 public class Polygon extends Shape {
+	
+	private final double minimalDistance = 3.0;
 
 	private int drawPrimitive;
 	private List<EditorPoint> points;
@@ -85,7 +87,12 @@ public class Polygon extends Shape {
 			}
 		}
 
-		ptMenorDist.setSelected(true);
+		if (menorDist <= minimalDistance) {
+			ptMenorDist.setSelected(true);
+		}
+		else {
+			ptMenorDist = null;
+		}
 
 		for (EditorPoint polygonPoint : points) {
 			if (polygonPoint != ptMenorDist) {
@@ -101,7 +108,7 @@ public class Polygon extends Shape {
 		EditorPoint p = getSelectedPoint();
 
 		if (p != null) {
-			if (Math.abs(newPoint.x - p.x) <= 3.0 && Math.abs(newPoint.y - p.y) <= 3.0) {
+			if (Math.abs(newPoint.x - p.x) <= minimalDistance && Math.abs(newPoint.y - p.y) <= minimalDistance) {
 				p.x = newPoint.x;
 				p.y = newPoint.y;
 
@@ -139,14 +146,14 @@ public class Polygon extends Shape {
 	public void scale(boolean enlarge) {
 		updatePointsByMatrix(internalScale(enlarge));
 	}
-	
+
 	@Override
 	public void rotate(double angle) {
 		updatePointsByMatrix(internalRotate(angle));
 	}
-	
-	private void updatePointsByMatrix(Transform matrix){
-		
+
+	private void updatePointsByMatrix(Transform matrix) {
+
 		for (EditorPoint p : getPoints()) {
 			EditorPoint p2 = matrix.transformPoint(p);
 			p.x = p2.x;
