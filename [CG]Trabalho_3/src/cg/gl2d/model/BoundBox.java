@@ -39,10 +39,10 @@ public class BoundBox {
 		gl.glVertex2d(min.x, max.y);
 		gl.glEnd();
 		
-		gl.glPointSize(4.0f);
-		gl.glBegin(GL.GL_POINTS);
-		gl.glVertex2d(center.x, center.y);
-		gl.glEnd();
+//		gl.glPointSize(4.0f);
+//		gl.glBegin(GL.GL_POINTS);
+//		gl.glVertex2d(center.x, center.y);
+//		gl.glEnd();
 	}
 
 	public void calcular() {
