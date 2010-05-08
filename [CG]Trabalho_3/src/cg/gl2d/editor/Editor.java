@@ -9,6 +9,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +34,7 @@ import cg.gl2d.model.Shape;
 import cg.gl2d.model.Spline;
 import cg.gl2d.model.Utils;
 
-public class Editor extends JPanel implements GLEventListener, KeyListener, MouseListener, MouseMotionListener, AdjustmentListener {
+public class Editor extends JPanel implements GLEventListener, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, AdjustmentListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -96,6 +98,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		canvas.addGLEventListener(this);
 		canvas.addKeyListener(this);
 		canvas.addMouseListener(this);
+		canvas.addMouseWheelListener(this);
 		canvas.addMouseMotionListener(this);
 		/*
 		 * Cria as barras de rolagem vertical e horizontal
@@ -481,6 +484,17 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			}
 			glDrawable.display();
 		}
+	}
+	
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		
+		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
+			if (selectedShape != null) {
+				selectedShape.rotate((double)e.getWheelRotation());
+				glDrawable.display();
+			}
+		}		
 	}
 
 	@Override
