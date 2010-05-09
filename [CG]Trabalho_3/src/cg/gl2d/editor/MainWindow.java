@@ -28,6 +28,7 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	private JToggleButton splineButton;
 	private JButton zoomInButton;
 	private JButton zoomOutButton;
+	private JButton colorButton;
 	private int buttonOffset = 0;
 	
 	private Editor editor;
@@ -46,6 +47,7 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		contentPane.setLayout(new BorderLayout());
 		contentPane.add(createToolBar(), BorderLayout.NORTH);
 		contentPane.add(createEditor(), BorderLayout.CENTER);
+		colorButton.setBackground(editor.getLineColor());
 	}
 	
 	private JPanel createToolBar() {
@@ -62,6 +64,8 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		createSeparator();
 		zoomInButton		= createButton("Zoom in (+)"	, "zoomInButton");
 		zoomOutButton		= createButton("Zoom out (-)"	, "zoomOutButton");
+		createSeparator();
+		colorButton			= createButton("Selecionar cor", null);
 		return toolBar;
 	}
 	
@@ -76,7 +80,11 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	}
 	
 	private JButton createButton(String text, String imageName) {
-		JButton b = new JButton(getImage(imageName));
+		JButton b = new JButton();
+		
+		if (imageName != null) {
+			b.setIcon(getImage(imageName));	
+		}
 		b.setToolTipText(text);
 		b.setBounds(buttonOffset, 5, 25, 25);
 		b.setBorderPainted(true);

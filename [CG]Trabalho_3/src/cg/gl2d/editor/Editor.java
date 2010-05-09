@@ -1,6 +1,7 @@
 package cg.gl2d.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -67,6 +68,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private double xp;
 	private double yn;
 	private double yp;
+	
+	private Color lineColor = Color.black;
 
 	private Shape shapeAtual;
 	private Shape selectedShape;
@@ -182,6 +185,14 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	public EditorAction getAction() {
 		return action;
+	}
+	
+	public Color getLineColor() {
+		return lineColor;
+	}
+	
+	public void setLineColor(Color color) {
+		lineColor = color;
 	}
 
 	@Override
