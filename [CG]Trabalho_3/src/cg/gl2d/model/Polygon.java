@@ -38,8 +38,8 @@ public class Polygon extends Shape {
 	}
 
 	@Override
-	public void draw(GL gl) {
-		gl.glColor3f(0.0f, 0.0f, 0.0f);
+	public void draw(GL gl, EditorColor color) {
+		gl.glColor3f(color.red, color.green, color.blue);
 
 		gl.glBegin(drawPrimitive);
 		for (EditorPoint p : points) {

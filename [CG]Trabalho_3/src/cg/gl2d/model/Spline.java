@@ -11,7 +11,7 @@ public class Spline extends Polygon {
 	}
 
 	@Override
-	public void draw(GL gl) {
+	public void draw(GL gl, EditorColor color) {
 
 		float[] controlPoints = pointsToFloatArray();
 		gl.glMap1f(GL.GL_MAP1_VERTEX_3, 0.0f, 1.0f, 3, getPointsCount(), controlPoints, 0);
@@ -25,7 +25,7 @@ public class Spline extends Polygon {
 		gl.glEnd();
 
 		gl.glPointSize(5.0f);
-		gl.glColor3f(0.0f, 0.0f, 0.0f);
+		gl.glColor3f(color.red, color.green, color.blue);
 		gl.glBegin(GL.GL_LINE_STRIP);
 		for (EditorPoint p : getPoints()) {
 			gl.glVertex2d(p.x, p.y);

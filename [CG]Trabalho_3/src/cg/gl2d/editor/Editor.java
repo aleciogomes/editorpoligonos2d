@@ -28,6 +28,7 @@ import javax.swing.JScrollBar;
 
 import cg.gl2d.model.Circle;
 import cg.gl2d.model.ClosedPolygon;
+import cg.gl2d.model.EditorColor;
 import cg.gl2d.model.EditorPoint;
 import cg.gl2d.model.OpenPolygon;
 import cg.gl2d.model.Polygon;
@@ -213,9 +214,14 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		gl.glLoadIdentity();
 
 		glu.gluOrtho2D(xn, xp, yn, yp);
+		
+		EditorColor c = new EditorColor();
+		c.red = lineColor.getRed();
+		c.green = lineColor.getGreen();
+		c.blue = lineColor.getBlue();
 
 		for (Shape s : shapes) {
-			s.draw(gl);
+			s.draw(gl, c);
 		}
 
 		gl.glColor3f(1.0f, 0.0f, 0.0f);

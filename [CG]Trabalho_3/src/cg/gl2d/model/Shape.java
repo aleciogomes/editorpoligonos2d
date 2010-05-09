@@ -12,7 +12,7 @@ public abstract class Shape {
 		selected = false;
 	}
 	
-	public abstract void draw(GL gl);
+	public abstract void draw(GL gl, EditorColor color);
 	
 	public abstract void mouseMoving(EditorPoint eventPoint);
 	
