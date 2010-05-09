@@ -30,7 +30,8 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	private JToggleButton splineButton;
 	private JButton zoomInButton;
 	private JButton zoomOutButton;
-	private JButton colorButton;
+	private JButton foregndColorButton;
+	private JButton backgndColorButton;
 	private int buttonOffset = 0;
 	
 	private Editor editor;
@@ -49,7 +50,8 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		contentPane.setLayout(new BorderLayout());
 		contentPane.add(createToolBar(), BorderLayout.NORTH);
 		contentPane.add(createEditor(), BorderLayout.CENTER);
-		colorButton.setBackground(editor.getLineColor());
+		foregndColorButton.setBackground(editor.getForegroundColor());
+		backgndColorButton.setBackground(editor.getBackgroundColor());
 	}
 	
 	private JPanel createToolBar() {
@@ -67,7 +69,8 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		zoomInButton		= createButton("Zoom in (+)"	, "zoomInButton");
 		zoomOutButton		= createButton("Zoom out (-)"	, "zoomOutButton");
 		createSeparator();
-		colorButton			= createButton("Selecionar cor", null);
+		foregndColorButton	= createButton("Selecionar cor principal", null);
+		backgndColorButton	= createButton("Selecionar cor secundária", null);
 		return toolBar;
 	}
 	
@@ -146,8 +149,10 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 			editor.zoomIn();
 		else if (e.getSource() == zoomOutButton)
 			editor.zoomOut();
-		else if (e.getSource() == colorButton) 
-			chooseColor();
+		else if (e.getSource() == foregndColorButton) 
+			chooseForegroundColor();
+		else if (e.getSource() == backgndColorButton) 
+			chooseBackgroundColor();
 	}
 	
 	public void zoomEnable(boolean zoomIn, boolean zoomOut) {
@@ -155,12 +160,21 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		zoomOutButton.setEnabled(zoomOut);
 	}
 	
-	private void chooseColor() {
-		Color color = JColorChooser.showDialog(this, "Selecione a cor", editor.getLineColor());
+	private void chooseForegroundColor() {
+		Color color = JColorChooser.showDialog(this, "Selecione a cor", editor.getForegroundColor());
 		
 		if (color != null) {
-			editor.setLineColor(color);
-			colorButton.setBackground(color);
+			editor.setForegroundColor(color);
+			foregndColorButton.setBackground(color);
+		}
+	}
+	
+	private void chooseBackgroundColor() {
+		Color color = JColorChooser.showDialog(this, "Selecione a cor", editor.getBackgroundColor());
+		
+		if (color != null) {
+			editor.setBackgroundColor(color);
+			backgndColorButton.setBackground(color);
 		}
 	}
 	

@@ -70,7 +70,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	private double yn;
 	private double yp;
 	
-	private Color lineColor = Color.black;
+	private Color foregndColor = Color.black;
+	private Color backgndColor = Color.green;
 
 	private Shape shapeAtual;
 	private Shape selectedShape;
@@ -188,12 +189,21 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		return action;
 	}
 	
-	public Color getLineColor() {
-		return lineColor;
+	public Color getForegroundColor() {
+		return foregndColor;
 	}
 	
-	public void setLineColor(Color color) {
-		lineColor = color;
+	public void setForegroundColor(Color color) {
+		foregndColor = color;
+		glDrawable.display();
+	}
+	
+	public Color getBackgroundColor() {
+		return backgndColor;
+	}
+	
+	public void setBackgroundColor(Color color) {
+		backgndColor = color;
 		glDrawable.display();
 	}
 
@@ -215,13 +225,11 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 		glu.gluOrtho2D(xn, xp, yn, yp);
 		
-		EditorColor c = new EditorColor();
-		c.red = lineColor.getRed();
-		c.green = lineColor.getGreen();
-		c.blue = lineColor.getBlue();
+		EditorColor fc = new EditorColor(foregndColor);
+		EditorColor bc = new EditorColor(backgndColor);
 
 		for (Shape s : shapes) {
-			s.draw(gl, c);
+			s.draw(gl, fc, bc);
 		}
 
 		gl.glColor3f(1.0f, 0.0f, 0.0f);

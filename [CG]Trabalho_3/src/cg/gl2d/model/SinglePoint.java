@@ -11,8 +11,8 @@ public class SinglePoint extends Shape {
 	}
 
 	@Override
-	public void draw(GL gl, EditorColor color) {
-		 gl.glColor3f(color.red, color.green, color.blue);
+	public void draw(GL gl, EditorColor foreColor, EditorColor backColor) {
+		 gl.glColor3f(foreColor.red, foreColor.green, foreColor.blue);
 		 gl.glPointSize(6.0f);
 
 		 gl.glBegin(GL.GL_POINTS);

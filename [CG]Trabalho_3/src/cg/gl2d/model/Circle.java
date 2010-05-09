@@ -24,8 +24,8 @@ public class Circle extends Shape {
 	}
 
 	@Override
-	public void draw(GL gl, EditorColor color) {
-		gl.glColor3f(color.red, color.green, color.blue);
+	public void draw(GL gl, EditorColor foreColor, EditorColor backColor) {
+		gl.glColor3f(foreColor.red, foreColor.green, foreColor.blue);
 
 		final int qtdPontos = 36;
 		final double angulo = 2 * Math.PI / (double) qtdPontos;

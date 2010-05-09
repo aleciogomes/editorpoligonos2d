@@ -1,5 +1,7 @@
 package cg.gl2d.model;
 
+import java.awt.Color;
+
 public class EditorColor {
 	
 	public float red;
@@ -7,6 +9,12 @@ public class EditorColor {
 	public float blue;
 	
 	public EditorColor() {
+	}
+	
+	public EditorColor(Color c) {
+		red = c.getRed();
+		green = c.getGreen();
+		blue = c.getBlue();
 	}
 
 	public EditorColor(float red, float green, float blue) {
