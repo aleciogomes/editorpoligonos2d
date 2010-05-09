@@ -1,6 +1,7 @@
 package cg.gl2d.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -144,11 +146,22 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 			editor.zoomIn();
 		else if (e.getSource() == zoomOutButton)
 			editor.zoomOut();
+		else if (e.getSource() == colorButton) 
+			chooseColor();
 	}
 	
 	public void zoomEnable(boolean zoomIn, boolean zoomOut) {
 		zoomInButton.setEnabled(zoomIn);
 		zoomOutButton.setEnabled(zoomOut);
+	}
+	
+	private void chooseColor() {
+		Color color = JColorChooser.showDialog(this, "Selecione a cor", editor.getLineColor());
+		
+		if (color != null) {
+			editor.setLineColor(color);
+			colorButton.setBackground(color);
+		}
 	}
 	
 	private ImageIcon getImage(String imageName) {

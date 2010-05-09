@@ -193,6 +193,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	
 	public void setLineColor(Color color) {
 		lineColor = color;
+		glDrawable.display();
 	}
 
 	@Override
