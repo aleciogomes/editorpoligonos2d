@@ -164,13 +164,12 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		}
 		else {
 			foregndColorButton.setBackground(selected.getForegroundColor().toNativeColor());
+			backgndColorButton.setEnabled(selected.getBackgroundColor() != null);
 			
 			if (selected.getBackgroundColor() == null)
-				backgndColorButton.setEnabled(false);
-			else {
-				backgndColorButton.setEnabled(true);
+				backgndColorButton.setBackground(null);
+			else 
 				backgndColorButton.setBackground(selected.getBackgroundColor().toNativeColor());
-			}
 		}
 	}
 	
