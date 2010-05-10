@@ -2,6 +2,7 @@ package cg.gl2d.control;
 
 import java.util.List;
 
+import cg.gl2d.model.Circle;
 import cg.gl2d.model.EditorPoint;
 import cg.gl2d.model.Polygon;
 import cg.gl2d.model.Shape;
@@ -22,8 +23,7 @@ public class Scanline {
 				if (p.getPoints().size() > 1) {
 					for (int i = 0; i < p.getPoints().size(); i++) {
 						EditorPoint p1 = p.getPoints().get(i);
-						EditorPoint p2 = Utils
-								.nextPointInList(p.getPoints(), i);
+						EditorPoint p2 = Utils.nextPointInList(p.getPoints(), i);
 
 						if (p1.y != p2.y) {
 							double ti = (clickedPoint.y - p1.y) / (p2.y - p1.y);
@@ -42,6 +42,13 @@ public class Scanline {
 							// TODO
 						}
 					}
+				}
+			} else if (s.getClass() == Circle.class) {
+				Circle c = (Circle)s;
+				EditorPoint center = c.getCenter();
+				
+				if( Utils.distanceBetweenPoints(center, clickedPoint) < c.getRadius() ){
+					interseccoes = 1;
 				}
 			}
 
