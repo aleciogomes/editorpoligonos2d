@@ -240,13 +240,13 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 			s.draw(gl);
 		}
 
-		gl.glColor3f(1.0f, 0.0f, 0.0f);
+		gl.glColor3f(0.9f, 0.9f, 0.9f);
 		gl.glBegin(GL.GL_LINES);
-		gl.glVertex2d(-40.0, 0.0);
-		gl.glVertex2d(40.0, 0.0);
+		gl.glVertex2d(xn, 0.0);
+		gl.glVertex2d(xp, 0.0);
 
-		gl.glVertex2d(0.0, -40.0);
-		gl.glVertex2d(0.0, 40.0);
+		gl.glVertex2d(0.0, yn);
+		gl.glVertex2d(0.0, yp);
 		gl.glEnd();
 
 		if (yi != 0.0) {
