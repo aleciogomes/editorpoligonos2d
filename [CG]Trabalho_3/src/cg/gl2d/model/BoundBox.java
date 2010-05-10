@@ -31,7 +31,7 @@ public class BoundBox {
 	}
 
 	public void draw(GL gl) {
-		gl.glColor3f(0.0f, 1.0f, 1.0f);
+		gl.glColor3f(0.75f, 0.75f, 0.75f);
 		gl.glBegin(GL.GL_LINE_LOOP);
 		gl.glVertex2d(min.x, min.y);
 		gl.glVertex2d(max.x, min.y);

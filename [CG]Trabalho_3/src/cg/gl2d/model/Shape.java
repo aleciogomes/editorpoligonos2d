@@ -70,7 +70,7 @@ public abstract class Shape {
 		Transform matrix = new Transform();
 		matrix = matrix.transformMatrix(translateInverse(center));
 		
-		// aplica a rotaÁ„o
+		// aplica a rotação
 		Transform rotation = new Transform();
 		rotation.setAngle(angle);
 		matrix = matrix.transformMatrix(rotation);

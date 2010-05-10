@@ -181,6 +181,7 @@ public class Polygon extends Shape {
 
 		if (p != null) {
 			points.remove(p);
+			boundBox.calcular();
 		}
 	}
 }

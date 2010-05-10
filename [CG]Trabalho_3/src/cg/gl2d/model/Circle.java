@@ -73,6 +73,14 @@ public class Circle extends Shape {
 	
 	@Override
 	public void scale(boolean enlarge) {
+		if(enlarge){
+			radius *= 2.0;
+		}
+		else{
+			radius *= 0.5;
+		}
+		
+		boundBox.calcular();
 	}
 	
 	@Override
