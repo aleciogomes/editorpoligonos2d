@@ -254,13 +254,13 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		gl.glVertex2d(0.0, yp);
 		gl.glEnd();
 
-		if (yi != 0.0) {
-			gl.glColor3f(0.5f, 0.0f, 0.5f);
-			gl.glBegin(GL.GL_LINES);
-			gl.glVertex2d(xn, yi);
-			gl.glVertex2d(xp, yi);
-			gl.glEnd();
-		}
+//		if (yi != 0.0) {
+//			gl.glColor3f(0.5f, 0.0f, 0.5f);
+//			gl.glBegin(GL.GL_LINES);
+//			gl.glVertex2d(xn, yi);
+//			gl.glVertex2d(xp, yi);
+//			gl.glEnd();
+//		}
 
 		gl.glFlush();
 	}
@@ -438,9 +438,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 					// scanline test
 					yi = clicked.y;
 					Scanline scl = new Scanline();
-					scl.scan(selShapes, clicked);
-
-					selectedShape = scl.getSelectedShape();
+					selectedShape = scl.scan(selShapes, clicked);
 
 					if (selectedShape != null) {
 						selectedShape.setSelected(true);
