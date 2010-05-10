@@ -217,7 +217,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 		
 		glDrawable.display();
 	}
-
+	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		glDrawable = drawable;
@@ -434,6 +434,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 				if (selectedShape != null) {
 					selectedShape.setSelected(true);
 				}
+				
+				listener.selectedChanged(selectedShape);
 
 				break;
 			}

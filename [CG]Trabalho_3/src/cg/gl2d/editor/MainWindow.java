@@ -17,6 +17,8 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import cg.gl2d.model.Shape;
+
 public class MainWindow extends JFrame implements EditorListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
@@ -152,6 +154,24 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	public void zoomEnable(boolean zoomIn, boolean zoomOut) {
 		zoomInButton.setEnabled(zoomIn);
 		zoomOutButton.setEnabled(zoomOut);
+	}
+	
+	public void selectedChanged(Shape selected) {
+		if (selected == null) {
+			foregndColorButton.setBackground(editor.getForegroundColor());
+			backgndColorButton.setEnabled(true);
+			backgndColorButton.setBackground(editor.getBackgroundColor());
+		}
+		else {
+			foregndColorButton.setBackground(selected.getForegroundColor().toNativeColor());
+			
+			if (selected.getBackgroundColor() == null)
+				backgndColorButton.setEnabled(false);
+			else {
+				backgndColorButton.setEnabled(true);
+				backgndColorButton.setBackground(selected.getBackgroundColor().toNativeColor());
+			}
+		}
 	}
 	
 	private void chooseForegroundColor() {
