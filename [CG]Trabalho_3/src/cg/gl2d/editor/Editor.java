@@ -26,6 +26,8 @@ import javax.media.opengl.glu.GLU;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 
+import cg.gl2d.control.Scanline;
+import cg.gl2d.control.Utils;
 import cg.gl2d.model.Circle;
 import cg.gl2d.model.ClosedPolygon;
 import cg.gl2d.model.EditorColor;
@@ -34,9 +36,10 @@ import cg.gl2d.model.OpenPolygon;
 import cg.gl2d.model.Polygon;
 import cg.gl2d.model.Shape;
 import cg.gl2d.model.Spline;
-import cg.gl2d.model.Utils;
 
-public class Editor extends JPanel implements GLEventListener, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, AdjustmentListener {
+public class Editor extends JPanel implements GLEventListener, KeyListener,
+		MouseListener, MouseMotionListener, MouseWheelListener,
+		AdjustmentListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -163,8 +166,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			adjustOrthoSize();
 
 			glDrawable.display();
-		}
-		finally {
+		} finally {
 			adjustingZoom = false;
 		}
 	}
@@ -173,7 +175,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		this.action = action;
 		listener.actionChanged(action);
 
-		if (this.action != EditorAction.move && this.action != EditorAction.select) {
+		if (this.action != EditorAction.move
+				&& this.action != EditorAction.select) {
 			// limpa a seleção
 			for (Shape s : shapes) {
 				s.setSelected(false);
@@ -241,11 +244,13 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		gl.glVertex2d(0.0, 40.0);
 		gl.glEnd();
 
-		gl.glColor3f(0.0f, 1.0f, 1.0f);
-		gl.glBegin(GL.GL_LINES);
-		gl.glVertex2d(xn, yi);
-		gl.glVertex2d(xp, yi);
-		gl.glEnd();
+		if (yi != 0.0) {
+			gl.glColor3f(0.5f, 0.0f, 0.5f);
+			gl.glBegin(GL.GL_LINES);
+			gl.glVertex2d(xn, yi);
+			gl.glVertex2d(xp, yi);
+			gl.glEnd();
+		}
 
 		gl.glFlush();
 	}
@@ -268,7 +273,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int width, int height) {
+	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int width,
+			int height) {
 		editorWidth = width;
 		editorHeight = height;
 
@@ -287,8 +293,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			int v = e.getValue() - verticalScroll;
 			verticalScroll = e.getValue();
 			yp -= v * zoom;
-		}
-		else {
+		} else {
 			/*
 			 * Scroll horizontal
 			 */
@@ -325,13 +330,12 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 				glDrawable.display();
 			}
 			break;
-		case KeyEvent.VK_N:
-		case KeyEvent.VK_M:
+		case KeyEvent.VK_DELETE:
+		case KeyEvent.VK_BACK_SPACE:
 			if (selectedShape != null) {
-				selectedShape.rotate(e.getKeyCode() == KeyEvent.VK_N ? -45.0 : 45.0);
+				shapes.remove(selectedShape);
 				glDrawable.display();
 			}
-			break;
 		}
 	}
 
@@ -361,6 +365,12 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void mouseClicked(MouseEvent e) {
 
 		EditorPoint clicked = normalizePoint(e.getX(), e.getY());
+		
+		if (e.getButton() == MouseEvent.BUTTON3 && action == EditorAction.select && selectedShape != null) {
+			selectedShape.removeSelectedPoint();
+			glDrawable.display();
+			return;
+		}
 
 		if (e.getClickCount() == 2 && shapeAtual != null) {
 			shapeAtual.finishDrawing();
@@ -397,68 +407,37 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			}
 			case select: {
 				selectedShape = null;
+
 				LinkedList<Shape> selShapes = new LinkedList<Shape>();
+
+				// faz uma prŽ-sele‹o
 				for (Shape s : shapes) {
-					if (selectedShape != null) {
-						break;
-					}
+					s.setSelected(false);
 
-					if (s.isPointInside(clicked)) {
+					if (s.isPointInsideBBox(clicked)) {
 						selShapes.add(s);
-						s.setSelected(true);
-						selectedShape = s;
-						break;
-					}
-				}
-
-				if (selectedShape == null) {
-					for (Shape s : shapes) {
-						s.setSelected(false);
 					}
 				}
 
 				// scanline test
 				yi = clicked.y;
-				int interseccoes = 0;
+				Scanline scl = new Scanline();
+				scl.scan(selShapes, clicked);
 
-				for (Shape s : selShapes) {
-					Polygon p = (Polygon) s;
-					if (p.getPoints().size() > 1) {
-						for (int i = 0; i < p.getPoints().size(); i++) {
-							EditorPoint p1 = p.getPoints().get(i);
-							EditorPoint p2 = Utils.nextPointInList(p.getPoints(), i);
-							
-							if(p1.y != p2.y){
-								double ti = (yi - p1.y) / (p2.y - p1.y);
+				selectedShape = scl.getSelectedShape();
 
-								if (ti > 0.0 && ti < 1.0) {
-									double xi = p1.x + ((p2.x - p1.x) * ti);
-
-									if (xi > clicked.x) {
-										interseccoes++;
-									}
-									else if(xi == clicked.x){
-										interseccoes = 1;
-										break;
-									}
-								}
-
-							}
-							else{
-								
-							}
-						}
-					}
+				if (selectedShape != null) {
+					selectedShape.setSelected(true);
 				}
-
-				System.out.println("Poligono foi selecionado? " + ((interseccoes % 2) == 1));
 
 				break;
 			}
 			}
 		}
 
-		if (action == EditorAction.openPolygon || action == EditorAction.closedPolygon || action == EditorAction.spline) {
+		if (action == EditorAction.openPolygon
+				|| action == EditorAction.closedPolygon
+				|| action == EditorAction.spline) {
 			((Polygon) shapeAtual).addPoint(clicked);
 		}
 
@@ -491,36 +470,42 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 			EditorPoint clicked = normalizePoint(e.getX(), e.getY());
 
-			if (action == EditorAction.move) {
+			if (action == EditorAction.select && selectedShape.isMoveable()) {
 				// primeira vez
 				if (pontoAntes.x == 0 && pontoAntes.y == 0) {
 					pontoAntes.x = clicked.x;
 					pontoAntes.y = clicked.y;
 				}
 
-				EditorPoint ptMove = new EditorPoint(clicked.x - pontoAntes.x, clicked.y - pontoAntes.y);
+				EditorPoint ptMove = new EditorPoint(clicked.x - pontoAntes.x,
+						clicked.y - pontoAntes.y);
 
 				pontoAntes.x = clicked.x;
 				pontoAntes.y = clicked.y;
 
 				selectedShape.mover(ptMove);
-			}
-			else if (action == EditorAction.select) {
+			} else if (action == EditorAction.select) {
 				selectedShape.update(clicked);
 			}
 			glDrawable.display();
 		}
 	}
-	
+
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		
-		if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL){
+
+		if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
 			if (selectedShape != null) {
-				selectedShape.rotate((double)e.getWheelRotation());
+				selectedShape.rotate((double) e.getWheelRotation());
 				glDrawable.display();
+			} else {
+				if (e.getWheelRotation() > 0.0) {
+					zoomIn();
+				} else {
+					zoomOut();
+				}
 			}
-		}		
+		}
 	}
 
 	@Override

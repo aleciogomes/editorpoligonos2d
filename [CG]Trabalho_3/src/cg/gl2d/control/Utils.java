@@ -1,6 +1,8 @@
-package cg.gl2d.model;
+package cg.gl2d.control;
 
 import java.util.List;
+
+import cg.gl2d.model.EditorPoint;
 
 public class Utils {
 	

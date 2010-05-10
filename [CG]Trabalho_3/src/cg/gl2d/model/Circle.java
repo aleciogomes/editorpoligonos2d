@@ -2,6 +2,9 @@ package cg.gl2d.model;
 
 import javax.media.opengl.GL;
 
+import cg.gl2d.control.Utils;
+
+
 public class Circle extends Shape {
 
 	private double radius;
@@ -73,6 +76,15 @@ public class Circle extends Shape {
 	
 	@Override
 	public void rotate(double angle) {
+	}
+	
+	@Override
+	public void removeSelectedPoint() {
+	}
+	
+	@Override
+	public boolean isMoveable() {
+		return true;
 	}
 	
 }

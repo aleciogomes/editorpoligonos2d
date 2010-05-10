@@ -37,6 +37,15 @@ public class SinglePoint extends Shape {
 	@Override
 	public void rotate(double angle) {	
 	}
+	
+	@Override
+	public void removeSelectedPoint() {
+	}
+	
+	@Override
+	public boolean isMoveable() {
+		return false;
+	}
 
 	@Override
 	public void mover(EditorPoint newPoint) {

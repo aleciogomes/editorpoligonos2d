@@ -52,4 +52,13 @@ public class Line extends Shape {
 		p2.y = p2.y + newPoint.y;
 	}
 	
+	@Override
+	public boolean isMoveable() {
+		return false;
+	}
+	
+	@Override
+	public void removeSelectedPoint() {
+	}
+	
 }

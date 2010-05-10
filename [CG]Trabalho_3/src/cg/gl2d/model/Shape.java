@@ -23,7 +23,7 @@ public abstract class Shape {
 	public abstract void scale(boolean enlarge);
 	public abstract void rotate(double angle);
 	
-	public boolean isPointInside(EditorPoint p){
+	public boolean isPointInsideBBox(EditorPoint p){
 		if (p.x >= boundBox.getMin().x && p.y >= boundBox.getMin().y) {
 			if (p.x <= boundBox.getMax().x && p.y <= boundBox.getMax().y) {
 				return true;
@@ -88,5 +88,9 @@ public abstract class Shape {
 		translateInverse.setElement(Transform.Ly, center.y);
 		return translateInverse;
 	}
+
+	public abstract boolean isMoveable();
+
+	public abstract void removeSelectedPoint();
 
 }

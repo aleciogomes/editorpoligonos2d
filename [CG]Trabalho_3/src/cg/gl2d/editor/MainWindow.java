@@ -23,7 +23,6 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	
 	private JPanel toolBar;
 	private JToggleButton selectButton;
-	private JToggleButton moveButton;
 	private JToggleButton openPolygonButton;
 	private JToggleButton closedPolygonButton;
 	private JToggleButton circleButton;
@@ -60,7 +59,6 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		toolBar.setPreferredSize(new Dimension(getWidth(), 35));
 		createSeparator();
 		selectButton 		= createToggleButton("Modo de seleção (ESC)"	, "selectButton");
-		moveButton			= createToggleButton("Mover objetos"			, "moveButton");
 		openPolygonButton	= createToggleButton("Desenhar polígono aberto"	, "openPolygonButton");
 		closedPolygonButton = createToggleButton("Desenhar polígono fechado", "closedPolygonButton");
 		circleButton 		= createToggleButton("Desenhar círculo"			, "circleButton");
@@ -118,7 +116,6 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	
 	public void actionChanged(EditorAction action) {
 		selectButton.setSelected(action == EditorAction.select);
-		moveButton.setSelected(action == EditorAction.move);
 		openPolygonButton.setSelected(action == EditorAction.openPolygon);
 		closedPolygonButton.setSelected(action == EditorAction.closedPolygon);
 		circleButton.setSelected(action == EditorAction.circle);
@@ -127,7 +124,6 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		closedPolygonButton.setBorderPainted(closedPolygonButton.isSelected());
 		circleButton.setBorderPainted(circleButton.isSelected());
 		selectButton.setBorderPainted(selectButton.isSelected());
-		moveButton.setBorderPainted(moveButton.isSelected());
 		splineButton.setBorderPainted(splineButton.isSelected());
 	}
 
@@ -135,8 +131,6 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == selectButton)
 			editor.setAction(EditorAction.select);
-		else if (e.getSource() == moveButton)
-			editor.setAction(EditorAction.move);
 		else if (e.getSource() == openPolygonButton)
 			editor.setAction(EditorAction.openPolygon);
 		else if (e.getSource() == closedPolygonButton)

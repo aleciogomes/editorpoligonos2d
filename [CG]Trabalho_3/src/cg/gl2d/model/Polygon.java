@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 
+import cg.gl2d.control.Utils;
+
 public class Polygon extends Shape {
-	
-	private final double minimalDistance = 3.0;
+
+	private final double minimalDistance = 1.5;
 
 	private int drawPrimitive;
 	private List<EditorPoint> points;
@@ -16,8 +18,8 @@ public class Polygon extends Shape {
 		this.drawPrimitive = drawPrimitive;
 		this.points = new ArrayList<EditorPoint>();
 	}
-	
-	public void setDrawPrimitive(int drawPrimitive){
+
+	public void setDrawPrimitive(int drawPrimitive) {
 		this.drawPrimitive = drawPrimitive;
 	}
 
@@ -74,9 +76,9 @@ public class Polygon extends Shape {
 	}
 
 	@Override
-	public boolean isPointInside(EditorPoint p) {
+	public boolean isPointInsideBBox(EditorPoint p) {
 
-		if (!super.isPointInside(p))
+		if (!super.isPointInsideBBox(p))
 			return false;
 
 		EditorPoint ptMenorDist = null;
@@ -93,8 +95,7 @@ public class Polygon extends Shape {
 
 		if (menorDist <= minimalDistance) {
 			ptMenorDist.setSelected(true);
-		}
-		else {
+		} else {
 			ptMenorDist = null;
 		}
 
@@ -112,7 +113,8 @@ public class Polygon extends Shape {
 		EditorPoint p = getSelectedPoint();
 
 		if (p != null) {
-			if (Math.abs(newPoint.x - p.x) <= minimalDistance && Math.abs(newPoint.y - p.y) <= minimalDistance) {
+			if (Math.abs(newPoint.x - p.x) <= minimalDistance
+					&& Math.abs(newPoint.y - p.y) <= minimalDistance) {
 				p.x = newPoint.x;
 				p.y = newPoint.y;
 
@@ -165,5 +167,19 @@ public class Polygon extends Shape {
 		}
 
 		getBoundBox().calcular();
+	}
+
+	@Override
+	public boolean isMoveable() {
+		return getSelectedPoint() == null;
+	}
+
+	@Override
+	public void removeSelectedPoint() {
+		EditorPoint p = getSelectedPoint();
+
+		if (p != null) {
+			points.remove(p);
+		}
 	}
 }
