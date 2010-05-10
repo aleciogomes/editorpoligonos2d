@@ -6,13 +6,14 @@ public class SinglePoint extends Shape {
 	
 	private EditorPoint point;
 	
-	public SinglePoint(EditorPoint point) {
+	public SinglePoint(EditorPoint point, EditorColor fc) {
+		super(fc, null);
 		this.point = point;
 	}
 
 	@Override
-	public void draw(GL gl, EditorColor foreColor, EditorColor backColor) {
-		 gl.glColor3f(foreColor.red, foreColor.green, foreColor.blue);
+	public void draw(GL gl) {
+		 gl.glColor3f(foregroundColor.red, foregroundColor.green, foregroundColor.blue);
 		 gl.glPointSize(6.0f);
 
 		 gl.glBegin(GL.GL_POINTS);

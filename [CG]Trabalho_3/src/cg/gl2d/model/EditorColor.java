@@ -22,5 +22,14 @@ public class EditorColor {
 		this.green = green;
 		this.blue = blue;
 	}
+	
+	public Color toNativeColor() {
+		return new Color((int)red, (int)green, (int)blue);
+	}
+	
+	@Override
+	public String toString() {
+        return getClass().getName() + "[r=" + red + "; g=" + green + "; b=" + blue + "]";
+	}
 
 }

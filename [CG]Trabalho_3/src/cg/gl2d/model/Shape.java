@@ -6,13 +6,17 @@ public abstract class Shape {
 
 	protected BoundBox boundBox;
 	protected boolean selected;
+	protected EditorColor foregroundColor;
+	protected EditorColor backgroundColor;
 	
-	public Shape(){
+	public Shape(EditorColor fc, EditorColor bc){
 		boundBox = new BoundBox(this);
 		selected = false;
+		foregroundColor = fc;
+		backgroundColor = bc;
 	}
 	
-	public abstract void draw(GL gl, EditorColor foreColor, EditorColor backColor);
+	public abstract void draw(GL gl);
 	
 	public abstract void mouseMoving(EditorPoint eventPoint);
 	
@@ -92,5 +96,21 @@ public abstract class Shape {
 	public abstract boolean isMoveable();
 
 	public abstract void removeSelectedPoint();
+
+	public EditorColor getForegroundColor() {
+		return foregroundColor;
+	}
+
+	public void setForegroundColor(EditorColor foregroundColor) {
+		this.foregroundColor = foregroundColor;
+	}
+
+	public EditorColor getBackgroundColor() {
+		return backgroundColor;
+	}
+
+	public void setBackgroundColor(EditorColor backgroundColor) {
+		this.backgroundColor = backgroundColor;
+	}
 
 }

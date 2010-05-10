@@ -73,8 +73,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 	private double yn;
 	private double yp;
 	
-	private Color foregndColor = Color.black;
-	private Color backgndColor = Color.green;
+	private EditorColor foregndColor = new EditorColor(Color.black);
+	private EditorColor backgndColor = new EditorColor(Color.green);
 
 	private Shape shapeAtual;
 	private Shape selectedShape;
@@ -193,20 +193,28 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 	}
 	
 	public Color getForegroundColor() {
-		return foregndColor;
+		return foregndColor.toNativeColor();
 	}
 	
 	public void setForegroundColor(Color color) {
-		foregndColor = color;
+		foregndColor = new EditorColor(color);
+		
+		if (selectedShape != null)
+			selectedShape.setForegroundColor(foregndColor);
+		
 		glDrawable.display();
 	}
 	
 	public Color getBackgroundColor() {
-		return backgndColor;
+		return backgndColor.toNativeColor();
 	}
 	
 	public void setBackgroundColor(Color color) {
-		backgndColor = color;
+		backgndColor = new EditorColor(color);
+		
+		if (selectedShape != null)
+			selectedShape.setBackgroundColor(backgndColor);
+		
 		glDrawable.display();
 	}
 
@@ -228,11 +236,8 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 
 		glu.gluOrtho2D(xn, xp, yn, yp);
 		
-		EditorColor fc = new EditorColor(foregndColor);
-		EditorColor bc = new EditorColor(backgndColor);
-
 		for (Shape s : shapes) {
-			s.draw(gl, fc, bc);
+			s.draw(gl);
 		}
 
 		gl.glColor3f(1.0f, 0.0f, 0.0f);
@@ -382,25 +387,25 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 		if (shapeAtual == null) {
 			switch (action) {
 			case openPolygon: {
-				shapeAtual = new OpenPolygon();
+				shapeAtual = new OpenPolygon(foregndColor);
 				shapes.add(shapeAtual);
 				((Polygon) shapeAtual).addPoint(clicked);
 				break;
 			}
 			case closedPolygon: {
-				shapeAtual = new ClosedPolygon();
+				shapeAtual = new ClosedPolygon(foregndColor);
 				shapes.add(shapeAtual);
 				((Polygon) shapeAtual).addPoint(clicked);
 				break;
 			}
 			case spline: {
-				shapeAtual = new Spline();
+				shapeAtual = new Spline(foregndColor, backgndColor);
 				shapes.add(shapeAtual);
 				((Polygon) shapeAtual).addPoint(clicked);
 				break;
 			}
 			case circle: {
-				shapeAtual = new Circle();
+				shapeAtual = new Circle(foregndColor);
 				((Circle) shapeAtual).setCenter(clicked);
 				shapes.add(shapeAtual);
 				break;
@@ -410,7 +415,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 
 				LinkedList<Shape> selShapes = new LinkedList<Shape>();
 
-				// faz uma pré-seleção
+				// faz uma pre-selecao
 				for (Shape s : shapes) {
 					s.setSelected(false);
 

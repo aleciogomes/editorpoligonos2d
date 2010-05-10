@@ -4,8 +4,8 @@ import javax.media.opengl.GL;
 
 public class OpenPolygon extends Polygon {
 
-	public OpenPolygon() {
-		super(GL.GL_LINE_STRIP);
+	public OpenPolygon(EditorColor fc) {
+		super(GL.GL_LINE_STRIP, fc);
 	}
 
 }

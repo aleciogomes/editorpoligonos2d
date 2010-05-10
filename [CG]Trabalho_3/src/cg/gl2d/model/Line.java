@@ -8,14 +8,15 @@ public class Line extends Shape {
 
 	private EditorPoint p2;
 
-	public Line(EditorPoint p1, EditorPoint p2) {
+	public Line(EditorPoint p1, EditorPoint p2, EditorColor fc) {
+		super(fc, null);
 		this.p1 = p1;
 		this.p2 = p2;
 	}
 
 	@Override
-	public void draw(GL gl, EditorColor foreColor, EditorColor backColor) {
-		gl.glColor3f(foreColor.red, foreColor.green, foreColor.blue);
+	public void draw(GL gl) {
+		gl.glColor3f(foregroundColor.red, foregroundColor.green, foregroundColor.blue);
 
 		gl.glBegin(GL.GL_LINES);
 			gl.glVertex2d(p1.x, p1.y);

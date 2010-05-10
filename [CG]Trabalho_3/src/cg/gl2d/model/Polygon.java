@@ -14,7 +14,8 @@ public class Polygon extends Shape {
 	private int drawPrimitive;
 	private List<EditorPoint> points;
 
-	public Polygon(int drawPrimitive) {
+	public Polygon(int drawPrimitive, EditorColor fc) {
+		super(fc, null);
 		this.drawPrimitive = drawPrimitive;
 		this.points = new ArrayList<EditorPoint>();
 	}
@@ -40,8 +41,8 @@ public class Polygon extends Shape {
 	}
 
 	@Override
-	public void draw(GL gl, EditorColor foreColor, EditorColor backColor) {
-		gl.glColor3f(foreColor.red, foreColor.green, foreColor.blue);
+	public void draw(GL gl) {
+		gl.glColor3f(foregroundColor.red, foregroundColor.green, foregroundColor.blue);
 
 		gl.glBegin(drawPrimitive);
 		for (EditorPoint p : points) {

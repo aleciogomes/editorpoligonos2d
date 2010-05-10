@@ -10,7 +10,8 @@ public class Circle extends Shape {
 	private double radius;
 	private EditorPoint center;
 
-	public Circle() {
+	public Circle(EditorColor fc) {
+		super(fc, null);
 		radius = 0;
 	}
 	
@@ -27,8 +28,8 @@ public class Circle extends Shape {
 	}
 
 	@Override
-	public void draw(GL gl, EditorColor foreColor, EditorColor backColor) {
-		gl.glColor3f(foreColor.red, foreColor.green, foreColor.blue);
+	public void draw(GL gl) {
+		gl.glColor3f(foregroundColor.red, foregroundColor.green, foregroundColor.blue);
 
 		final int qtdPontos = 36;
 		final double angulo = 2 * Math.PI / (double) qtdPontos;
