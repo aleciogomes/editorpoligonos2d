@@ -12,9 +12,9 @@ public class EditorColor {
 	}
 	
 	public EditorColor(Color c) {
-		red = c.getRed();
-		green = c.getGreen();
-		blue = c.getBlue();
+		red = c.getRed() / 255;
+		green = c.getGreen() / 255;
+		blue = c.getBlue() / 255;
 	}
 
 	public EditorColor(float red, float green, float blue) {
@@ -24,7 +24,7 @@ public class EditorColor {
 	}
 	
 	public Color toNativeColor() {
-		return new Color((int)red, (int)green, (int)blue);
+		return new Color((int)(red * 255.0), (int)(green * 255.0), (int)(blue * 255.0));
 	}
 	
 	@Override
