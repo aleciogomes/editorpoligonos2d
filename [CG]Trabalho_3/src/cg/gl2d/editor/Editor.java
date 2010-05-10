@@ -37,9 +37,7 @@ import cg.gl2d.model.Polygon;
 import cg.gl2d.model.Shape;
 import cg.gl2d.model.Spline;
 
-public class Editor extends JPanel implements GLEventListener, KeyListener,
-		MouseListener, MouseMotionListener, MouseWheelListener,
-		AdjustmentListener {
+public class Editor extends JPanel implements GLEventListener, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, AdjustmentListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -63,6 +61,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 	private int verticalScroll = 1000;
 	private int horizontalScroll = 1000;
 	private double zoom = 0.1;
+	private Point zoomPoint;
 	private boolean adjustingZoom = false;
 	private boolean enableZoomIn = true;
 	private boolean enableZoomOut = true;
@@ -72,7 +71,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 	private double xp;
 	private double yn;
 	private double yp;
-	
+
 	private EditorColor foregndColor = new EditorColor(Color.black);
 	private EditorColor backgndColor = new EditorColor(Color.green);
 
@@ -139,20 +138,27 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 	}
 
 	public void zoomIn() {
-		if (enableZoomIn)
+		if (enableZoomIn) {
 			doZoom(-0.01);
+
+			if (!enableZoomIn)
+				setAction(EditorAction.select);
+		}
 	}
 
 	public void zoomOut() {
-		if (enableZoomOut)
+		if (enableZoomOut) {
 			doZoom(0.01);
+
+			if (!enableZoomOut)
+				setAction(EditorAction.select);
+		}
 	}
 
 	private void doZoom(double value) {
 		adjustingZoom = true;
 		try {
-			Point p1 = new Point(editorWidth / 2, editorHeight / 2);
-			EditorPoint e = normalizePoint(p1.x, p1.y);
+			EditorPoint e = normalizePoint(zoomPoint.x, zoomPoint.y);
 
 			zoom += value;
 			enableZoomIn = zoom > 0.01;
@@ -160,9 +166,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 			listener.zoomEnable(enableZoomIn, enableZoomOut);
 			adjustOrthoSize();
 
-			Point p2 = normalizeEditorPoint(e.x, e.y);
-			verticalScrollBar.setValue(verticalScroll + (p2.y - p1.y));
-			horizontalScrollBar.setValue(horizontalScroll + (p2.x - p1.x));
+			Point p = normalizeEditorPoint(e.x, e.y);
+			verticalScrollBar.setValue(verticalScroll + (p.y - zoomPoint.y));
+			horizontalScrollBar.setValue(horizontalScroll + (p.x - zoomPoint.y));
 			adjustOrthoSize();
 
 			glDrawable.display();
@@ -175,8 +181,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 		this.action = action;
 		listener.actionChanged(action);
 
-		if (this.action != EditorAction.move
-				&& this.action != EditorAction.select) {
+		if (this.action != EditorAction.move && this.action != EditorAction.select) {
 			// limpa a seleção
 			for (Shape s : shapes) {
 				s.setSelected(false);
@@ -191,33 +196,33 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 	public EditorAction getAction() {
 		return action;
 	}
-	
+
 	public Color getForegroundColor() {
 		return foregndColor.toNativeColor();
 	}
-	
+
 	public void setForegroundColor(Color color) {
 		foregndColor = new EditorColor(color);
-		
+
 		if (selectedShape != null)
 			selectedShape.setForegroundColor(foregndColor);
-		
+
 		glDrawable.display();
 	}
-	
+
 	public Color getBackgroundColor() {
 		return backgndColor.toNativeColor();
 	}
-	
+
 	public void setBackgroundColor(Color color) {
 		backgndColor = new EditorColor(color);
-		
+
 		if (selectedShape != null)
 			selectedShape.setBackgroundColor(backgndColor);
-		
+
 		glDrawable.display();
 	}
-	
+
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		glDrawable = drawable;
@@ -235,7 +240,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 		gl.glLoadIdentity();
 
 		glu.gluOrtho2D(xn, xp, yn, yp);
-		
+
 		for (Shape s : shapes) {
 			s.draw(gl);
 		}
@@ -278,8 +283,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int width,
-			int height) {
+	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int width, int height) {
 		editorWidth = width;
 		editorHeight = height;
 
@@ -369,86 +373,92 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 	@Override
 	public void mouseClicked(MouseEvent e) {
 
-		EditorPoint clicked = normalizePoint(e.getX(), e.getY());
-		
-		if (e.getButton() == MouseEvent.BUTTON3 && action == EditorAction.select && selectedShape != null) {
-			selectedShape.removeSelectedPoint();
-			glDrawable.display();
-			return;
-		}
+		if (action == EditorAction.zoomIn) {
+			zoomPoint = new Point(e.getX(), e.getY());
+			zoomIn();
+		} else if (action == EditorAction.zoomOut) {
+			zoomPoint = new Point(e.getX(), e.getY());
+			zoomOut();
+		} else {
+			EditorPoint clicked = normalizePoint(e.getX(), e.getY());
 
-		if (e.getClickCount() == 2 && shapeAtual != null) {
-			shapeAtual.finishDrawing();
-			shapeAtual = null;
-			glDrawable.display();
-			return;
-		}
-
-		if (shapeAtual == null) {
-			switch (action) {
-			case openPolygon: {
-				shapeAtual = new OpenPolygon(foregndColor);
-				shapes.add(shapeAtual);
-				((Polygon) shapeAtual).addPoint(clicked);
-				break;
+			if (e.getButton() == MouseEvent.BUTTON3 && action == EditorAction.select && selectedShape != null) {
+				selectedShape.removeSelectedPoint();
+				glDrawable.display();
+				return;
 			}
-			case closedPolygon: {
-				shapeAtual = new ClosedPolygon(foregndColor);
-				shapes.add(shapeAtual);
-				((Polygon) shapeAtual).addPoint(clicked);
-				break;
-			}
-			case spline: {
-				shapeAtual = new Spline(foregndColor, backgndColor);
-				shapes.add(shapeAtual);
-				((Polygon) shapeAtual).addPoint(clicked);
-				break;
-			}
-			case circle: {
-				shapeAtual = new Circle(foregndColor);
-				((Circle) shapeAtual).setCenter(clicked);
-				shapes.add(shapeAtual);
-				break;
-			}
-			case select: {
-				selectedShape = null;
 
-				LinkedList<Shape> selShapes = new LinkedList<Shape>();
+			if (e.getClickCount() == 2 && shapeAtual != null) {
+				shapeAtual.finishDrawing();
+				shapeAtual = null;
+				glDrawable.display();
+				return;
+			}
 
-				// faz uma pre-selecao
-				for (Shape s : shapes) {
-					s.setSelected(false);
+			if (shapeAtual == null) {
+				switch (action) {
+				case openPolygon: {
+					shapeAtual = new OpenPolygon(foregndColor);
+					shapes.add(shapeAtual);
+					((Polygon) shapeAtual).addPoint(clicked);
+					break;
+				}
+				case closedPolygon: {
+					shapeAtual = new ClosedPolygon(foregndColor);
+					shapes.add(shapeAtual);
+					((Polygon) shapeAtual).addPoint(clicked);
+					break;
+				}
+				case spline: {
+					shapeAtual = new Spline(foregndColor, backgndColor);
+					shapes.add(shapeAtual);
+					((Polygon) shapeAtual).addPoint(clicked);
+					break;
+				}
+				case circle: {
+					shapeAtual = new Circle(foregndColor);
+					((Circle) shapeAtual).setCenter(clicked);
+					shapes.add(shapeAtual);
+					break;
+				}
+				case select: {
+					selectedShape = null;
 
-					if (s.isPointInsideBBox(clicked)) {
-						selShapes.add(s);
+					LinkedList<Shape> selShapes = new LinkedList<Shape>();
+
+					// faz uma pre-selecao
+					for (Shape s : shapes) {
+						s.setSelected(false);
+
+						if (s.isPointInsideBBox(clicked)) {
+							selShapes.add(s);
+						}
 					}
+
+					// scanline test
+					yi = clicked.y;
+					Scanline scl = new Scanline();
+					scl.scan(selShapes, clicked);
+
+					selectedShape = scl.getSelectedShape();
+
+					if (selectedShape != null) {
+						selectedShape.setSelected(true);
+					}
+
+					listener.selectedChanged(selectedShape);
+
+					break;
 				}
-
-				// scanline test
-				yi = clicked.y;
-				Scanline scl = new Scanline();
-				scl.scan(selShapes, clicked);
-
-				selectedShape = scl.getSelectedShape();
-
-				if (selectedShape != null) {
-					selectedShape.setSelected(true);
 				}
-				
-				listener.selectedChanged(selectedShape);
-
-				break;
 			}
+
+			if (action == EditorAction.openPolygon || action == EditorAction.closedPolygon || action == EditorAction.spline) {
+				((Polygon) shapeAtual).addPoint(clicked);
 			}
-		}
 
-		if (action == EditorAction.openPolygon
-				|| action == EditorAction.closedPolygon
-				|| action == EditorAction.spline) {
-			((Polygon) shapeAtual).addPoint(clicked);
+			glDrawable.display();
 		}
-
-		glDrawable.display();
 	}
 
 	@Override
@@ -484,8 +494,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener,
 					pontoAntes.y = clicked.y;
 				}
 
-				EditorPoint ptMove = new EditorPoint(clicked.x - pontoAntes.x,
-						clicked.y - pontoAntes.y);
+				EditorPoint ptMove = new EditorPoint(clicked.x - pontoAntes.x, clicked.y - pontoAntes.y);
 
 				pontoAntes.x = clicked.x;
 				pontoAntes.y = clicked.y;

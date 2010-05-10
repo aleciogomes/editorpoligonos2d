@@ -29,8 +29,8 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	private JToggleButton closedPolygonButton;
 	private JToggleButton circleButton;
 	private JToggleButton splineButton;
-	private JButton zoomInButton;
-	private JButton zoomOutButton;
+	private JToggleButton zoomInButton;
+	private JToggleButton zoomOutButton;
 	private JButton foregndColorButton;
 	private JButton backgndColorButton;
 	private int buttonOffset = 0;
@@ -52,7 +52,9 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		contentPane.add(createToolBar(), BorderLayout.NORTH);
 		contentPane.add(createEditor(), BorderLayout.CENTER);
 		foregndColorButton.setBackground(editor.getForegroundColor());
+		foregndColorButton.setForeground(foregndColorButton.getBackground());
 		backgndColorButton.setBackground(editor.getBackgroundColor());
+		backgndColorButton.setForeground(backgndColorButton.getBackground());
 	}
 	
 	private JPanel createToolBar() {
@@ -66,8 +68,8 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		circleButton 		= createToggleButton("Desenhar círculo"			, "circleButton");
 		splineButton 		= createToggleButton("Desenhar spline"			, "splineButton");
 		createSeparator();
-		zoomInButton		= createButton("Zoom in (+)"	, "zoomInButton");
-		zoomOutButton		= createButton("Zoom out (-)"	, "zoomOutButton");
+		zoomInButton		= createToggleButton("Zoom in (+)"	, "zoomInButton");
+		zoomOutButton		= createToggleButton("Zoom out (-)"	, "zoomOutButton");
 		createSeparator();
 		foregndColorButton	= createButton("Selecionar cor principal", null);
 		backgndColorButton	= createButton("Selecionar cor secundária", null);
@@ -122,6 +124,8 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		closedPolygonButton.setSelected(action == EditorAction.closedPolygon);
 		circleButton.setSelected(action == EditorAction.circle);
 		splineButton.setSelected(action == EditorAction.spline);
+		zoomInButton.setSelected(action == EditorAction.zoomIn);
+		zoomOutButton.setSelected(action == EditorAction.zoomOut);
 		openPolygonButton.setBorderPainted(openPolygonButton.isSelected());
 		closedPolygonButton.setBorderPainted(closedPolygonButton.isSelected());
 		circleButton.setBorderPainted(circleButton.isSelected());
@@ -142,9 +146,9 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		else if (e.getSource() == splineButton)
 			editor.setAction(EditorAction.spline);
 		else if (e.getSource() == zoomInButton)
-			editor.zoomIn();
+			editor.setAction(EditorAction.zoomIn);
 		else if (e.getSource() == zoomOutButton)
-			editor.zoomOut();
+			editor.setAction(EditorAction.zoomOut);
 		else if (e.getSource() == foregndColorButton) 
 			chooseForegroundColor();
 		else if (e.getSource() == backgndColorButton) 
@@ -171,6 +175,8 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 			else 
 				backgndColorButton.setBackground(selected.getBackgroundColor().toNativeColor());
 		}
+		foregndColorButton.setForeground(foregndColorButton.getBackground());
+		backgndColorButton.setForeground(backgndColorButton.getBackground());
 	}
 	
 	private void chooseForegroundColor() {
@@ -179,6 +185,7 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		if (color != null) {
 			editor.setForegroundColor(color);
 			foregndColorButton.setBackground(color);
+			foregndColorButton.setForeground(color);
 		}
 	}
 	
@@ -188,6 +195,7 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		if (color != null) {
 			editor.setBackgroundColor(color);
 			backgndColorButton.setBackground(color);
+			backgndColorButton.setForeground(color);
 		}
 	}
 	
