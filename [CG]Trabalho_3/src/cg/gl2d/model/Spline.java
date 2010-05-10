@@ -18,7 +18,7 @@ public class Spline extends Polygon {
 		gl.glMap1f(GL.GL_MAP1_VERTEX_3, 0.0f, 1.0f, 3, getPointsCount(), controlPoints, 0);
 		gl.glEnable(GL.GL_MAP1_VERTEX_3);
 
-		gl.glColor3f(foregroundColor.red, foregroundColor.green, foregroundColor.blue);
+		gl.glColor3f(backgroundColor.red, backgroundColor.green, backgroundColor.blue);
 		gl.glBegin(GL.GL_LINE_STRIP);
 		for (float i = 0; i <= 30; i++) {
 			gl.glEvalCoord1f(i / (float) 30.0);
@@ -26,7 +26,7 @@ public class Spline extends Polygon {
 		gl.glEnd();
 
 		gl.glPointSize(5.0f);
-		gl.glColor3f(backgroundColor.red, backgroundColor.green, backgroundColor.blue);
+		gl.glColor3f(foregroundColor.red, foregroundColor.green, foregroundColor.blue);
 		gl.glBegin(GL.GL_LINE_STRIP);
 		for (EditorPoint p : getPoints()) {
 			gl.glVertex2d(p.x, p.y);
