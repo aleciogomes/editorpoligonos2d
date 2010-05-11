@@ -9,12 +9,10 @@ import cg.gl2d.model.Shape;
 
 public class Scanline {
 
-	private Shape selectedShape;
-
 	public Scanline() {
 	}
 
-	public int scan(List<Shape> shapes, EditorPoint clickedPoint) {
+	public Shape scan(List<Shape> shapes, EditorPoint clickedPoint) {
 		for (Shape s : shapes) {
 			int interseccoes = 0;
 
@@ -39,7 +37,6 @@ public class Scanline {
 								}
 							}
 						} else {
-							// TODO
 						}
 					}
 				}
@@ -53,17 +50,11 @@ public class Scanline {
 			}
 
 			if ((interseccoes % 2) == 1) {
-				selectedShape = s;
-				return interseccoes;
+				return s;
 			}
 		}
 
-		selectedShape = null;
-		return 0;
-	}
-
-	public Shape getSelectedShape() {
-		return selectedShape;
+		return null;
 	}
 
 }
