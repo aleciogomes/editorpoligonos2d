@@ -25,11 +25,6 @@ public class Transform {
 		for (int i = 0; i < 16; ++i)
 			result.matrix[i] = matrix[i % 4] * t.matrix[i / 4 * 4] + matrix[(i % 4) + 4] * t.matrix[i / 4 * 4 + 1] + matrix[(i % 4) + 8] * t.matrix[i / 4 * 4 + 2] + matrix[(i % 4) + 12] * t.matrix[i / 4 * 4 + 3];
 		
-		System.out.println("" + matrix[0] + ", " + matrix[1] + ", " + matrix[2] + ", "+ matrix[3]);
-		System.out.println("" + matrix[4] + ", " + matrix[5] + ", " + matrix[6] + ", "+ matrix[7]);
-		System.out.println("" + matrix[8] + ", " + matrix[9] + ", " + matrix[10] + ", "+ matrix[11]);
-		System.out.println("" + matrix[12] + ", " + matrix[13] + ", " + matrix[14] + ", "+ matrix[15]);
-		
 		return result;
 	}
 
