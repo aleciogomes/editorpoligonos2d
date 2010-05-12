@@ -396,6 +396,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			glDrawable.display();
 			break;
 		case KeyEvent.VK_ESCAPE:
+			selectedShape = null;
 			setAction(EditorAction.select);
 			break;
 		case KeyEvent.VK_MINUS:
