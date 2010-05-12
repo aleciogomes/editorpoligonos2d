@@ -19,6 +19,9 @@ import javax.swing.WindowConstants;
 
 import cg.gl2d.model.Shape;
 
+/**
+ * Janela principal do editor de polígonos 2D
+ */
 public class MainWindow extends JFrame implements EditorListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
@@ -37,6 +40,9 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 	
 	private Editor editor;
 	
+	/**
+	 * Cria a janela com a barra de ferramentas e a área de edição
+	 */
 	public MainWindow() {
 		super("Editor de polígonos 2D");   
 		setSize(800, 600);
@@ -46,6 +52,9 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		initComponents();
 	}	
 	
+	/**
+	 * Inicializa os componentes da tela
+	 */
 	private void initComponents() {
 		Container contentPane = getContentPane();
 		contentPane.setLayout(new BorderLayout());
@@ -57,6 +66,10 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		backgndColorButton.setForeground(backgndColorButton.getBackground());
 	}
 	
+	/**
+	 * Cria a barra de ferramentas
+	 * @return Panel com os botões
+	 */
 	private JPanel createToolBar() {
 		toolBar = new JPanel();
 		toolBar.setLayout(null);
@@ -76,6 +89,12 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		return toolBar;
 	}
 	
+	/**
+	 * Cria um botão que o usuário clica e fica pressionado
+	 * @param text Hint do botão
+	 * @param imageName Nome da imagem que será pintada no botão
+	 * @return Botão
+	 */
 	private JToggleButton createToggleButton(String text, String imageName) {
 		JToggleButton b = new JToggleButton(getImage(imageName));
 		b.setToolTipText(text);
@@ -85,7 +104,13 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		buttonOffset += 25;
 		return b;
 	}
-	
+
+	/**
+	 * Cria um botão padrão
+	 * @param text Hint do botão
+	 * @param imageName Nome da imagem que será pintada no botão
+	 * @return Botão
+	 */
 	private JButton createButton(String text, String imageName) {
 		JButton b = new JButton();
 		
@@ -101,6 +126,10 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		return b;
 	}
 	
+	/**
+	 * Cria um separador para a agrupar botões na barra de ferramentas
+	 * @return Separador
+	 */
 	private JSeparator createSeparator() {
 		JSeparator s = new JSeparator(SwingConstants.VERTICAL);
 		s.setBounds(buttonOffset + 4, 5, 5, 25);
@@ -109,15 +138,27 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		return s;
 	}
 	
+	/**
+	 * Cria o renderizador que será usado como área de edição pelo usuário, 
+	 * adicionando a própria janela como listener de eventos de notificação.
+	 * @return Renderizador
+	 */
 	private JPanel createEditor() {
 		editor = new Editor(this);
 		return editor;
 	}
 	
+	/**
+	 * Chama o método de foco do renderizador
+	 */
 	public void requestEditorFocus() {
 		editor.focus();
 	}
 	
+	/**
+	 * Método de notificação disparado pelo renderizador quando a ação de edição muda.
+	 * É usado para alterar o estado dos botões da barra de ferramentas.
+	 */
 	public void actionChanged(EditorAction action) {
 		selectButton.setSelected(action == EditorAction.select);
 		openPolygonButton.setSelected(action == EditorAction.openPolygon);
@@ -133,6 +174,9 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		splineButton.setBorderPainted(splineButton.isSelected());
 	}
 
+	/**
+	 * Método disparado pelos botões da barra de ferramentas quando clicados.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == selectButton)
@@ -155,11 +199,21 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 			chooseBackgroundColor();
 	}
 	
+	/**
+	 * Evento disparado pelo renderizador quando o zoom é habilitado/desabilitado.
+	 * Utilizado para habilitar/desabilitar os botões de zoom.
+	 */
 	public void zoomEnable(boolean zoomIn, boolean zoomOut) {
 		zoomInButton.setEnabled(zoomIn);
 		zoomOutButton.setEnabled(zoomOut);
 	}
 	
+	/**
+	 * Evento disparado pelo renderizador quando o usuário seleciona os desceleciona um polígono.
+	 * Utilizado para alterar os botões de seleção de cor conforme cores do polígono selecionado.
+	 * Obs.: Se "selected == null", é porque não tem nenhum objeto selecionado, então usa a cor 
+	 * padrão atribuída ao renderizador. 
+	 */
 	public void selectedChanged(Shape selected) {
 		if (selected == null) {
 			foregndColorButton.setBackground(editor.getForegroundColor());
@@ -179,6 +233,10 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		backgndColorButton.setForeground(backgndColorButton.getBackground());
 	}
 	
+	/**
+	 * Abre a caixa de seleção de cor e aplica a cor selecionada à cor principal dos
+	 * polígonos do renderizador.
+	 */
 	private void chooseForegroundColor() {
 		Color color = JColorChooser.showDialog(this, "Selecione a cor", editor.getForegroundColor());
 		
@@ -189,6 +247,10 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		}
 	}
 	
+	/**
+	 * Abre a caixa de seleção de cor e aplica a cor selecionada à cor secundária dos
+	 * polígonos do renderizador.
+	 */
 	private void chooseBackgroundColor() {
 		Color color = JColorChooser.showDialog(this, "Selecione a cor", editor.getBackgroundColor());
 		
@@ -199,10 +261,19 @@ public class MainWindow extends JFrame implements EditorListener, ActionListener
 		}
 	}
 	
+	/**
+	 * Retorna um PNG do pacote "cg.gl2d.editor.img" 
+	 * @param imageName Nome da imagem desejada
+	 * @return A imagem de acordo com o nome
+	 */
 	private ImageIcon getImage(String imageName) {
 		return new ImageIcon(MainWindow.class.getResource("img/"+ imageName +".png"));
 	}
 	
+	/**
+	 * Método de inicialização do editor
+	 * @param args Argumentos de inicialização passados pela JVM
+	 */
 	public static void main(String[] args) {
 		MainWindow mainWindow = new MainWindow();
 		mainWindow.setVisible(true);
