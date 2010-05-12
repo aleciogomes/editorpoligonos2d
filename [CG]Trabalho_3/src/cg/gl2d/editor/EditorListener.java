@@ -2,6 +2,9 @@ package cg.gl2d.editor;
 
 import cg.gl2d.model.Shape;
 
+/**
+ * Listener de eventos da class Editor
+ */
 public interface EditorListener {
 	
 	/**
