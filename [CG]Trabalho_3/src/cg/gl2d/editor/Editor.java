@@ -37,6 +37,10 @@ import cg.gl2d.model.Polygon;
 import cg.gl2d.model.Shape;
 import cg.gl2d.model.Spline;
 
+/**
+ * Classe principal do editor. Implementa o listener de eventos do GL (output)
+ * e os listeners de eventos do mouse e teclado (input).
+ */
 public class Editor extends JPanel implements GLEventListener, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, AdjustmentListener {
 
 	private static final long serialVersionUID = 1L;
@@ -82,6 +86,10 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 	double yi = 0.0;
 
+	/**
+	 * Inicia a classe do Editor
+	 * @param listener Listener que recebe as notificações do objeto
+	 */
 	public Editor(EditorListener listener) {
 		/*
 		 * Armazena o listener de callback do editor
@@ -133,10 +141,16 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		pontoAntes = new EditorPoint();
 	}
 
+	/**
+	 * Requisita o foco pro canvas do GL
+	 */
 	public void focus() {
 		canvas.requestFocus();
 	}
 
+	/**
+	 * Aproximar o zoom
+	 */
 	public void zoomIn() {
 		if (enableZoomIn) {
 			doZoom(-0.01);
@@ -146,6 +160,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 	}
 
+	/**
+	 * Afasta o zoom
+	 */
 	public void zoomOut() {
 		if (enableZoomOut) {
 			doZoom(0.01);
@@ -155,6 +172,12 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 	}
 
+	/**
+	 * Altera o zoom do editor
+	 * @param value Grau de aproximação 
+	 * 		value < 0: aproxima
+	 * 		value > 0: afasta
+	 */
 	private void doZoom(double value) {
 		adjustingZoom = true;
 		try {
@@ -177,6 +200,10 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 	}
 
+	/**
+	 * Sinaliza a ação a ser executada pelo usuário
+	 * @param action Ação selecionada
+	 */
 	public void setAction(EditorAction action) {
 		this.action = action;
 		listener.actionChanged(action);
@@ -193,14 +220,24 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 	}
 
+	/**
+	 * Retorna a ação atual
+	 */
 	public EditorAction getAction() {
 		return action;
 	}
 
+	/**
+	 * Retorna a cor principal atribuída ao editor
+	 */
 	public Color getForegroundColor() {
 		return foregndColor.toNativeColor();
 	}
 
+	/**
+	 * Atribui a cor principal do editor.
+	 * Todo novo polígono será desenhado com essa cor como principal
+	 */
 	public void setForegroundColor(Color color) {
 		foregndColor = new EditorColor(color);
 
@@ -210,10 +247,18 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		glDrawable.display();
 	}
 
+	/**
+	 * Retorna a cor secundária atribuída ao editor
+	 */
 	public Color getBackgroundColor() {
 		return backgndColor.toNativeColor();
 	}
 
+	/**
+	 * Atribui a cor sed=cundária do editor.
+	 * Todo novo polígono que utiliza mais de uma cor 
+	 * será desenhado com essa cor como secundária
+	 */
 	public void setBackgroundColor(Color color) {
 		backgndColor = new EditorColor(color);
 
@@ -223,6 +268,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		glDrawable.display();
 	}
 
+	/**
+	 * Inicialização do GL
+	 */
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		glDrawable = drawable;
@@ -233,34 +281,38 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
+
+	/**
+	 * Renderiza os polígonos
+	 */
 	@Override
 	public void display(GLAutoDrawable arg0) {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();
-
+		/*
+		 * Gera o ortho com as coordenadas de -x, +x, -y e +y
+		 */
 		glu.gluOrtho2D(xn, xp, yn, yp);
-
+		/*
+		 * Desenha os eixos x e y utilizados como orientação
+		 */
+		gl.glColor3f(0.9f, 0.9f, 0.9f);
+		gl.glBegin(GL.GL_LINES);
+			//eixo x
+			gl.glVertex2d(xn, 0.0);
+			gl.glVertex2d(xp, 0.0);
+			//eixo y
+			gl.glVertex2d(0.0, yn);
+			gl.glVertex2d(0.0, yp);
+		gl.glEnd();
+		/*
+		 * Renderiza os polígonos desenhados pelo usuário.
+		 * Cada polígono sabe se auto-desenhar
+		 */
 		for (Shape s : shapes) {
 			s.draw(gl);
 		}
-
-		gl.glColor3f(0.9f, 0.9f, 0.9f);
-		gl.glBegin(GL.GL_LINES);
-		gl.glVertex2d(xn, 0.0);
-		gl.glVertex2d(xp, 0.0);
-
-		gl.glVertex2d(0.0, yn);
-		gl.glVertex2d(0.0, yp);
-		gl.glEnd();
-
-//		if (yi != 0.0) {
-//			gl.glColor3f(0.5f, 0.0f, 0.5f);
-//			gl.glBegin(GL.GL_LINES);
-//			gl.glVertex2d(xn, yi);
-//			gl.glVertex2d(xp, yi);
-//			gl.glEnd();
-//		}
 
 		gl.glFlush();
 	}
@@ -269,11 +321,20 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2) {
 	}
 
+	/**
+	 * Ajusta as coordenadas do Ortho, respeitando o grau de aproximação (zoom)
+	 */
 	private void adjustOrthoSize() {
 		xp = editorWidth * zoom + xn;
 		yn = yp - editorHeight * zoom;
 	}
 
+	/**
+	 * Executado na inicialização do editor (primeira notificação do reshape),
+	 * inicializa as coordenadas do Ortho, com a origem (0,0) no centro da tela.
+	 * Utiliza o valor do zoom como razão entre Ortho e tela.
+	 * @see reshape()
+	 */
 	private void initializeOrthoSize() {
 		xp = (editorWidth * zoom) / 2;
 		xn = -xp;
@@ -282,6 +343,11 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		initializing = false;
 	}
 
+	/**
+	 * Método de notificação do GL que indica que a tela está sendo redimencionada.
+	 * @see initializeOrthoSize()
+	 * @see adjustOrthoSize()
+	 */
 	@Override
 	public void reshape(GLAutoDrawable arg0, int arg1, int arg2, int width, int height) {
 		editorWidth = width;
@@ -293,6 +359,10 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 			adjustOrthoSize();
 	}
 
+	/**
+	 * Notificação disparada pelas barras de rolagem.
+	 * Faz o pan do Ortho de acordo com o scroll feito pelo usuário
+	 */
 	@Override
 	public void adjustmentValueChanged(AdjustmentEvent e) {
 		if (e.getSource() == verticalScrollBar) {
@@ -316,6 +386,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 	}
 
+	/**
+	 * Notificação do teclado indicando que uma tecla foi pressionada.
+	 */
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
@@ -356,6 +429,13 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void keyTyped(KeyEvent e) {
 	}
 
+	/**
+	 * Normaliza uma coordenada (x,y) da tela e retorna a 
+	 * coordenada do Ortho correspondente
+	 * @param x valor de x do ponto da tela
+	 * @param y valor de y do ponto da tela
+	 * @return O ponto correspondente no Ortho
+	 */
 	private EditorPoint normalizePoint(int x, int y) {
 		EditorPoint p = new EditorPoint();
 		p.x = Utils.normalizeE(0, x, editorWidth, xn, xp);
@@ -363,6 +443,13 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		return p;
 	}
 
+	/**
+	 * Normaliza uma coordenada (x,y) do Ortho e retorna a
+	 * coordenada correspondente na tela
+	 * @param x valor de x do ponto no Ortho
+	 * @param y valor de y do ponto no Ortho
+	 * @return O ponto correspondente na tela
+	 */
 	private Point normalizeEditorPoint(double x, double y) {
 		Point p = new Point();
 		p.x = Utils.normalizeB(0, editorWidth, xn, x, xp);
@@ -370,6 +457,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		return p;
 	}
 
+	/**
+	 * Evento de notificação que indica que o usuário clicou no editor
+	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
 
@@ -471,11 +561,19 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 	public void mousePressed(MouseEvent e) {
 	}
 
+	/**
+	 * Evento de notificação que indica que o usuário soltou
+	 * o botão do mouse que estava pressionado
+	 */
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		pontoAntes.x = pontoAntes.y = 0.0;
 	}
 
+	/**
+	 * Evento disparado enquanto o usuário move o mouse 
+	 * sobre o editor com um botão pressionado
+	 */
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (glDrawable == null)
@@ -505,6 +603,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 	}
 
+	/**
+	 * Evento que indica quando o usuário está usando o scroll do mouse
+	 */
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 
@@ -522,6 +623,9 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 		}
 	}
 
+	/**
+	 * Evento que notifica quando o usuário está movendo o mouse sobre o editor
+	 */
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		if (glDrawable == null)
