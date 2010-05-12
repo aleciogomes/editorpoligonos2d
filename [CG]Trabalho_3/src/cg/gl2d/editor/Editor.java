@@ -191,7 +191,7 @@ public class Editor extends JPanel implements GLEventListener, KeyListener, Mous
 
 			Point p = normalizeEditorPoint(e.x, e.y);
 			verticalScrollBar.setValue(verticalScroll + (p.y - zoomPoint.y));
-			horizontalScrollBar.setValue(horizontalScroll + (p.x - zoomPoint.y));
+			horizontalScrollBar.setValue(horizontalScroll + (p.x - zoomPoint.x));
 			adjustOrthoSize();
 
 			glDrawable.display();
