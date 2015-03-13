@@ -1,0 +1,3 @@
+Objetivo: implementar um editor interativo de polígonos 2D côncavo, convexos e entrelaçado.
+
+Descrição: implementar em Java uma aplicação para criar e visualizar polígonos 2D, utilizando a biblioteca JOGL. A aplicação deve permitir a criação interativa (clicando na tela) de polígonos sem limite do número de vértices de cada polígono, e sem limite de polígonos. Além disso, cada polígono pode ter sua própria cor e deve ser possível: apagar/mover vértices e apagar/mover polígonos. As funções (apagar/mover) devem se interativas (o usuário deve clicar no polígono ou vértice).
